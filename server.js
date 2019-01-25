@@ -33,7 +33,7 @@ io.on('connection', socket => {
 	})
 
 	socket.on('disconnect', () => {
-		console.log('Disconnecting')
+		console.log(`${socket.id} disconnecting`)
 		var i = clients.indexOf(socket);
 		clients.splice(i, 1);
 	})
