@@ -26,49 +26,14 @@
 			const ctx = canvas.getContext('2d')
 			//canvas.addEventListener('click', getMousePos, false);
 			document.addEventListener('keydown', keyDownHandler, false);
+			document.addEventListener('keyup', keyUpHandler, false);
+
+			/*
+				VARIABLES
+			*/
 
 			const HEIGHT = 600
 			const WIDTH = 800
-
-			let player = {
-				name: '',
-				x: Math.floor(Math.random() * WIDTH),
-				y: Math.floor(Math.random() * HEIGHT),
-				color: 'red',
-				speed: 8,
-				w: 32,
-				h: 32,
-			}
-
-			let enemy = {
-				name: '',
-				x: 0,
-				y: 0,
-				color: 'blue',
-				speed: 8,
-				w: 32,
-				h: 32,
-			}
-
-			function salvarNome(){
-				let nome = document.getElementById('nome').value;
-				player.name = nome;
-				document.getElementById("canvas").style.display = 'block'
-				document.getElementById("form").style.display = 'none'
-			}
-
-			setInterval(function() {
-				socket.emit('sendPosition', player);
-				draw()
-			}, 1000/60)
-
-			function getMousePos(evt) {
-				var rect = canvas.getBoundingClientRect();		
-				player.x = evt.clientX - rect.left,
-				player.y = evt.clientY - rect.top
-				ctx.fillRect(player.x - 12, player.y - 12, 24, 24);
-				socket.emit('sendPosition', player);
-			}
 
 			const KEYS ={
 				up: 87,
@@ -77,28 +42,45 @@
 				left: 65
 			}
 
-			function keyDownHandler(event) {
-				if(event.keyCode == KEYS.right) {
-					player.x += player.speed
-				}
-				if(event.keyCode == KEYS.left){
-					player.x -= player.speed
-				}
-				if(event.keyCode == KEYS.up){
-					player.y -= player.speed
-				}
-				if(event.keyCode == KEYS.down){
-					player.y += player.speed
-				}
-				ctx.fillStyle = player.color
-				ctx.fillRect(player.x - 12, player.y - 12, 24, 24);
+			let keyUp = false;
+			let keyDown = false;
+			let keyRight = false;
+			let keyLeft = false;
+
+			let player = {
+				name: '',
+				x: Math.floor(Math.random() * WIDTH),
+				y: Math.floor(Math.random() * HEIGHT),
+				speed: 2,
+				w: 32,
+				h: 32,
 			}
-			
-			
+
+			let enemy = {
+				name: '',
+				x: Math.floor(Math.random() * WIDTH),
+				y: Math.floor(Math.random() * HEIGHT),
+				speed: 2,
+				w: 32,
+				h: 32,
+			}
+
+			/*
+				FUNCTIONS
+			*/
+
+			function salvarNome(){
+				let nome = document.getElementById('nome').value;
+				player.name = nome;
+				document.getElementById("canvas").style.display = 'block'
+				document.getElementById("form").style.display = 'none'
+			}
+
+
 			function draw(){
 				ctx.fillStyle = "white"
 				ctx.fillRect(0, 0, WIDTH, HEIGHT)
-				ctx.fillStyle = player.color
+				ctx.fillStyle = 'blue'
 				ctx.fillRect(player.x, player.y, player.w, player.h);
 				ctx.font = "20px Georgia";
 				ctx.fillStyle = "black"
@@ -106,16 +88,78 @@
 				if(enemy){
 					ctx.fillStyle = "black"
 					ctx.fillText(enemy.name, WIDTH - 80, 40);
-					ctx.fillStyle = enemy.color
+					ctx.fillStyle = 'red'
 					ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
 				}
 			}
 
+			function update(){
+				if(keyRight) {
+					player.x += player.speed
+				}
+				if(keyLeft){
+					player.x -= player.speed
+				}
+				if(keyUp){
+					player.y -= player.speed
+				}
+				if(keyDown){
+					player.y += player.speed
+				}
+			}
+
+			/*
+			function getMousePos(evt) {
+				var rect = canvas.getBoundingClientRect();		
+				player.x = evt.clientX - rect.left,
+				player.y = evt.clientY - rect.top
+				ctx.fillRect(player.x, player.y - 12, 24, 24);
+				socket.emit('sendPosition', player);
+			}*/
+
+			/*
+				KEYBOAR HANDLER
+			*/
+			function keyDownHandler(event) {
+				if(event.keyCode == KEYS.right) {
+					keyRight = true;
+				}
+				if(event.keyCode == KEYS.left){
+					keyLeft = true;
+				}
+				if(event.keyCode == KEYS.up){
+					keyUp = true;
+				}
+				if(event.keyCode == KEYS.down){
+					keyDown = true;
+				}
+			}
+
+			function keyUpHandler(event) {
+				if(event.keyCode == KEYS.right) {
+					keyRight = false;
+				}
+				if(event.keyCode == KEYS.left){
+					keyLeft = false;
+				}
+				if(event.keyCode == KEYS.up){
+					keyUp = false;
+				}
+				if(event.keyCode == KEYS.down){
+					keyDown = false;
+				}
+			}
 
 			socket.on('position', data => {
 				console.log(data)
 				enemy = data
 			})
+
+			setInterval(function() {
+				socket.emit('sendPosition', player);
+				update()
+				draw()
+			}, 1000/60)
 		</script>
 	</body>
 </html>
