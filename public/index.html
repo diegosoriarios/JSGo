@@ -58,6 +58,7 @@
 			}
 
 			setInterval(function() {
+				socket.emit('sendPosition', player);
 				draw()
 			}, 1000/60)
 
@@ -98,10 +99,16 @@
 				ctx.fillStyle = "white"
 				ctx.fillRect(0, 0, WIDTH, HEIGHT)
 				ctx.fillStyle = player.color
-				ctx.fillRect(player.x - 12, player.y - 12, 24, 24);				
+				ctx.fillRect(player.x, player.y, player.w, player.h);
 				ctx.font = "20px Georgia";
 				ctx.fillStyle = "black"
 				ctx.fillText(player.name, 20, 40);
+				if(enemy){
+					ctx.fillStyle = "black"
+					ctx.fillText(enemy.name, WIDTH - 80, 40);
+					ctx.fillStyle = enemy.color
+					ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+				}
 			}
 
 
