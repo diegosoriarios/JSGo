@@ -15,8 +15,10 @@ app.use('/', (req, res) => {
 })
 
 let turn = [];
+let clients = []
 
 io.on('connection', socket => {
+	clients.push(socket)
 	console.log('Socket Connectado' + socket.id)
 
 	socket.on('sendPosition', data => {
@@ -28,6 +30,12 @@ io.on('connection', socket => {
 			console.log(turn)
 			
 		}
+	})
+
+	socket.on('disconnect', () => {
+		console.log('Disconnecting')
+		var i = clients.indexOf(socket);
+		clients.splice(i, 1);
 	})
 })
 
