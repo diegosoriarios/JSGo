@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Chat</title>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<link rel="shortcut icon" href="#">
+		<style>
+			canvas {
+				background-color: grey;
+				border: 1px solid black;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="form">
+			<label>Nome: </label>
+			<input name="nome" id="nome" />
+			<button id="submit" onclick="salvarNome()">Salvar</button>
+		</div>
+		<canvas id="canvas" height="600" width="800" style="display: none"></canvas>
+		<script type="text/javascript">
+			var socket = io('http://localhost:3000')
+
+			const canvas = document.getElementById('canvas')
+			const ctx = canvas.getContext('2d')
+			//canvas.addEventListener('click', getMousePos, false);
+			document.addEventListener('keydown', keyDownHandler, false);
+
+			const HEIGHT = 600
+			const WIDTH = 800
+
+			let player = {
+				name: '',
+				x: 0,
+				y: 0,
+				color: 'red',
+				speed: 8,
+				w: 32,
+				h: 32,
+			}
+
+			let enemy = {
+				name: '',
+				x: 0,
+				y: 0,
+				color: 'blue',
+				speed: 8,
+				w: 32,
+				h: 32,
+			}
+
+			function salvarNome(){
+				let nome = document.getElementById('nome').value;
+				player.name = nome;
+				document.getElementById("canvas").style.display = 'block'
+				document.getElementById("form").style.display = 'none'
+			}
+
+			setInterval(function() {
+				draw()
+			}, 1000/60)
+
+			function getMousePos(evt) {
+				var rect = canvas.getBoundingClientRect();		
+				player.x = evt.clientX - rect.left,
+				player.y = evt.clientY - rect.top
+				ctx.fillRect(player.x - 12, player.y - 12, 24, 24);
+				socket.emit('sendPosition', player);
+			}
+
+			const KEYS ={
+				up: 87,
+				down: 83,
+				right: 68,
+				left: 65
+			}
+
+			function keyDownHandler(event) {
+				if(event.keyCode == KEYS.right) {
+					player.x += player.speed
+				}
+				if(event.keyCode == KEYS.left){
+					player.x -= player.speed
+				}
+				if(event.keyCode == KEYS.up){
+					player.y -= player.speed
+				}
+				if(event.keyCode == KEYS.down){
+					player.y += player.speed
+				}
+				ctx.fillStyle = player.color
+				ctx.fillRect(player.x - 12, player.y - 12, 24, 24);
+			}
+			
+			
+			function draw(){
+				ctx.fillStyle = "white"
+				ctx.fillRect(0, 0, WIDTH, HEIGHT)
+				ctx.fillStyle = player.color
+				ctx.fillRect(player.x - 12, player.y - 12, 24, 24);				
+				ctx.font = "20px Georgia";
+				ctx.fillStyle = "black"
+				ctx.fillText(player.name, 20, 40);
+			}
+
+
+			socket.on('position', data => {
+				console.log(data)
+				enemy = data
+			})
+		</script>
+	</body>
+</html>
