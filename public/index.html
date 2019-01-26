@@ -113,16 +113,32 @@
 
 			function update(){
 				if(keyRight) {
-					player.x += player.speed
+					if(player.x + player.w <= WIDTH){
+						player.x += player.speed
+					}else{
+						keyRight = false;
+					}
 				}
 				if(keyLeft){
-					player.x -= player.speed
+					if(player.x >= 0){
+						player.x -= player.speed
+					}else{
+						keyLeft = false;
+					}
 				}
 				if(keyUp){
-					player.y -= player.speed
+					if(player.y >= 0){
+						player.y -= player.speed
+					}else{
+						keyUp = false;
+					}
 				}
 				if(keyDown){
-					player.y += player.speed
+					if(player.y + player.h <= HEIGHT){
+						player.y += player.speed
+					}else{
+						keyDown = false;
+					}
 				}
 				if(shootLeft){
 					bulletPlayer.shooting = true;
@@ -166,19 +182,27 @@
 					keyRight = true;
 				}
 				if(event.keyCode == KEYS.left){
-					keyLeft = true;
+					if(player.x > 0){
+						keyLeft = true;
+					}					
 				}
 				if(event.keyCode == KEYS.up){
-					keyUp = true;
+					if(player.y > 0){
+						keyUp = true;
+					}					
 				}
 				if(event.keyCode == KEYS.down){
-					keyDown = true;
+					if(player.y + player.h < HEIGHT){
+						keyDown = true;
+					}
 				}
-				if(event.keyCode === KEYS.shootLeft){
-					shootLeft = true;
-				}
-				if(event.keyCode === KEYS.shootRight){
-					shootRight = true;
+				if(!bulletPlayer.shooting){
+					if(event.keyCode === KEYS.shootLeft){
+						shootLeft = true;
+					}
+					if(event.keyCode === KEYS.shootRight){
+						shootRight = true;
+					}
 				}
 			}
 
