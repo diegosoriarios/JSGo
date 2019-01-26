@@ -28,6 +28,7 @@
 			document.addEventListener('keydown', keyDownHandler, false);
 			document.addEventListener('keyup', keyUpHandler, false);
 
+			console.log('AQUI')
 			/*
 				VARIABLES
 			*/
@@ -35,17 +36,21 @@
 			const HEIGHT = 600
 			const WIDTH = 800
 
-			const KEYS ={
+			const KEYS = {
 				up: 87,
 				down: 83,
 				right: 68,
-				left: 65
+				left: 65,
+				shootRight: 39,
+				shootLeft: 37
 			}
 
 			let keyUp = false;
 			let keyDown = false;
 			let keyRight = false;
 			let keyLeft = false;
+			let shootRight = false;
+			let shootLeft = false;
 
 			let player = {
 				name: '',
@@ -54,6 +59,15 @@
 				speed: 2,
 				w: 32,
 				h: 32,
+			}
+
+			let bulletPlayer = {
+				x: player.x + (player.w / 2),
+				y: player.y + (player.h / 2),
+				w: 4,
+				h: 4,
+				speed: 2,
+				shooting: false,
 			}
 
 			let enemy = {
@@ -91,6 +105,10 @@
 					ctx.fillStyle = 'red'
 					ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
 				}
+				if(bulletPlayer.shooting){
+					ctx.fillStyle = 'black'
+					ctx.fillRect(bulletPlayer.x, bulletPlayer.y, bulletPlayer.w, bulletPlayer.h);
+				}
 			}
 
 			function update(){
@@ -106,6 +124,24 @@
 				if(keyDown){
 					player.y += player.speed
 				}
+				if(shootLeft){
+					bulletPlayer.shooting = true;
+					createbulletPlayer(-1)
+				}
+				if(shootRight){
+					bulletPlayer.shooting = true;
+					createbulletPlayer(1)
+				}
+				if(bulletPlayer.shooting){
+					bulletPlayer.x += bulletPlayer.speed
+				}
+				if(bulletPlayer.x > HEIGHT || bulletPlayer.x < 0){
+					bulletPlayer.shooting = false;
+				}
+			}
+
+			function createbulletPlayer(direction){
+				bulletPlayer.speed *= direction
 			}
 
 			/*
@@ -132,6 +168,12 @@
 				}
 				if(event.keyCode == KEYS.down){
 					keyDown = true;
+				}
+				if(event.keyCode === KEYS.shootLeft){
+					shootLeft = true;
+				}
+				if(event.keyCode === KEYS.shootRight){
+					shootRight = true;
 				}
 			}
 
