@@ -28,7 +28,6 @@
 			document.addEventListener('keydown', keyDownHandler, false);
 			document.addEventListener('keyup', keyUpHandler, false);
 
-			console.log('AQUI')
 			/*
 				VARIABLES
 			*/
@@ -70,14 +69,7 @@
 				shooting: false,
 			}
 
-			let enemy = {
-				name: '',
-				x: Math.floor(Math.random() * WIDTH),
-				y: Math.floor(Math.random() * HEIGHT),
-				speed: 2,
-				w: 32,
-				h: 32,
-			}
+			let enemy = {}
 
 			/*
 				FUNCTIONS
@@ -154,7 +146,14 @@
 				}
 				if(bulletPlayer.shooting){
 					bulletPlayer.x += bulletPlayer.speed
-					console.log(bulletPlayer.x)
+				}
+				if(bulletPlayer.x + bulletPlayer.w > enemy.x && 
+					bulletPlayer.x < enemy.x + enemy.w &&
+					bulletPlayer.y + bulletPlayer.h > enemy.y &&
+					bulletPlayer.y < enemy.y + enemy.h
+				){
+					console.log('acertou')
+					bulletPlayer.shooting = false;
 				}
 				if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
 					bulletPlayer.shooting = false;
@@ -228,7 +227,7 @@
 			}
 
 			socket.on('position', data => {
-				console.log(data)
+				//console.log(data)
 				enemy = data
 			})
 
