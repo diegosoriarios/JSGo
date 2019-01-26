@@ -126,22 +126,27 @@
 				}
 				if(shootLeft){
 					bulletPlayer.shooting = true;
-					createbulletPlayer(-1)
+					bulletPlayer.x = player.x + (player.w / 2)
+					bulletPlayer.y = player.y + (player.h / 2)
+					bulletPlayer.speed = -8;
 				}
 				if(shootRight){
 					bulletPlayer.shooting = true;
-					createbulletPlayer(1)
+					bulletPlayer.x = player.x + (player.w / 2)
+					bulletPlayer.y = player.y + (player.h / 2)
+					bulletPlayer.speed = 8;
 				}
 				if(bulletPlayer.shooting){
 					bulletPlayer.x += bulletPlayer.speed
+					console.log(bulletPlayer.x)
 				}
-				if(bulletPlayer.x > HEIGHT || bulletPlayer.x < 0){
+				if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
 					bulletPlayer.shooting = false;
 				}
 			}
 
 			function createbulletPlayer(direction){
-				bulletPlayer.speed *= direction
+				bulletPlayer.speed = direction
 			}
 
 			/*
@@ -189,6 +194,12 @@
 				}
 				if(event.keyCode == KEYS.down){
 					keyDown = false;
+				}
+				if(event.keyCode == KEYS.shootLeft){
+					shootLeft = false;
+				}
+				if(event.keyCode == KEYS.shootRight){
+					shootRight = false;
 				}
 			}
 
