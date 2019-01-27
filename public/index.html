@@ -53,11 +53,14 @@
 
 			let player = {
 				name: '',
-				x: Math.floor(Math.random() * WIDTH),
-				y: Math.floor(Math.random() * HEIGHT),
+				//x: Math.floor(Math.random() * WIDTH),
+				//y: Math.floor(Math.random() * HEIGHT),
+				x: 40,
+				y: 40,
 				speed: 2,
 				w: 32,
 				h: 32,
+				gravity: 4,
 			}
 
 			let bulletPlayer = {
@@ -104,6 +107,16 @@
 			}
 
 			function update(){
+				player.y += player.gravity
+				if(player.y + player.h >= HEIGHT){
+					player.gravity = 0;
+				}
+				if(player.y + player.h < HEIGHT && !keyUp){
+					player.gravity = 5;
+				}
+				if(player.y + player.h > HEIGHT){
+					player.y = HEIGHT - player.h
+				}
 				if(keyRight) {
 					if(player.x + player.w <= WIDTH){
 						player.x += player.speed
@@ -119,18 +132,27 @@
 					}
 				}
 				if(keyUp){
-					if(player.y >= 0){
+					console.log('JUMP')
+					player.gravity = -5;
+					/*if(player.y >= 0){
 						player.y -= player.speed
 					}else{
 						keyUp = false;
-					}
+					}*/
 				}
 				if(keyDown){
+					console.log('Abaixar')
+					if(player.y + player.h <= HEIGHT){
+						player.h = 16;
+						player.y = player.y + (player.h / 2)
+					}
+					/*
 					if(player.y + player.h <= HEIGHT){
 						player.y += player.speed
 					}else{
 						keyDown = false;
 					}
+					*/
 				}
 				if(shootLeft){
 					bulletPlayer.shooting = true;
@@ -191,9 +213,7 @@
 					}					
 				}
 				if(event.keyCode == KEYS.down){
-					if(player.y + player.h < HEIGHT){
-						keyDown = true;
-					}
+					keyDown = true;
 				}
 				if(!bulletPlayer.shooting){
 					if(event.keyCode === KEYS.shootLeft){
@@ -216,6 +236,8 @@
 					keyUp = false;
 				}
 				if(event.keyCode == KEYS.down){
+					player.y = player.y - (player.h / 2)
+					player.h = 32;
 					keyDown = false;
 				}
 				if(event.keyCode == KEYS.shootLeft){
