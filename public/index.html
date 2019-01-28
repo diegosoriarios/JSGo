@@ -193,11 +193,6 @@
 					if(keyUp){
 						console.log('JUMP')
 						player.gravity = -15;
-						/*if(player.y >= 0){
-							player.y -= player.speed
-						}else{
-							keyUp = false;
-						}*/
 					}
 					if(keyDown){
 						console.log('Abaixar')
@@ -205,13 +200,6 @@
 							player.h = 16;
 							player.y = player.y + (player.h / 2)
 						}
-						/*
-						if(player.y + player.h <= HEIGHT){
-							player.y += player.speed
-						}else{
-							keyDown = false;
-						}
-						*/
 					}
 					if(shootLeft){
 						bulletPlayer.shooting = true;
