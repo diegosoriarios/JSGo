@@ -14,6 +14,7 @@ app.use('/', (req, res) => {
 	res.sender('index.html');
 })
 
+const WIDTH = 800
 let turn = [];
 let clients = []
 
@@ -23,13 +24,30 @@ io.on('connection', socket => {
 
 	socket.on('sendPosition', data => {
 		let player = data
-		console.log(data)
+		//console.log(data)
 		turn.push(player)
 		socket.broadcast.emit('position', data);
 		if(turn.length === 2){
 			console.log(turn)
 			
 		}
+	})
+
+	socket.on('shot', data => {
+		var bullets = data;
+		turn.forEach(players => {
+			if(bullets.x + bullets.w > players.x && 
+				bullets.x < players.x + players.w &&
+				bullets.y + bullets.h > players.y &&
+				bullets.y < players.y + players.h){
+					if(players.name !== bullets.name){
+						bullets.shooting = false;
+						players.hp -= Math.floor(Math.random() * 11 + 1);
+						socket.broadcast.emit('position', players);
+					}
+			}
+		})
+		socket.broadcast.emit('bullets', data);
 	})
 
 	socket.on('disconnect', () => {

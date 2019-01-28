@@ -54,18 +54,31 @@
 				w: 32,
 				h: 32,
 				gravity: 4,
+				hp: 100,
 			}
 
 			let bulletPlayer = {
+				name: player.name,
 				x: player.x + (player.w / 2),
 				y: player.y + (player.h / 2),
 				w: 4,
 				h: 4,
 				speed: 2,
 				shooting: false,
+				hp: 100,
 			}
 
 			let enemy = {}
+
+			let bulletEnemy = {
+				name: enemy.name,
+				x: enemy.x + (player.w / 2),
+				y: enemy.y + (player.h / 2),
+				w: 4,
+				h: 4,
+				speed: 2,
+				shooting: false,
+			}
 
 			/*
 				FUNCTIONS
@@ -145,6 +158,10 @@
 				document.addEventListener('keyup', keyUpHandler, false);
 				document.removeEventListener('keydown', getKey, false);
 				document.removeEventListener('click', getMousePos, false);
+
+				/*
+					DRAW
+				*/
 				function draw(){
 					ctx.fillStyle = "white"
 					ctx.fillRect(0, 0, WIDTH, HEIGHT)
@@ -153,9 +170,11 @@
 					ctx.font = "20px Georgia";
 					ctx.fillStyle = "black"
 					ctx.fillText(player.name, 20, 40);
-					if(enemy){
+					ctx.fillText(player.hp, 20, 80);
+					if(enemy !== {}){
 						ctx.fillStyle = "black"
 						ctx.fillText(enemy.name, WIDTH - 80, 40);
+						ctx.fillText(enemy.hp, WIDTH - 80, 80);
 						ctx.fillStyle = 'red'
 						ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
 					}
@@ -163,7 +182,15 @@
 						ctx.fillStyle = 'black'
 						ctx.fillRect(bulletPlayer.x, bulletPlayer.y, bulletPlayer.w, bulletPlayer.h);
 					}
+					if(bulletEnemy.shooting){
+						ctx.fillStyle = 'black'
+						ctx.fillRect(bulletEnemy.x, bulletEnemy.y, bulletEnemy.w, bulletEnemy.h);
+					}
 				}
+
+				/*
+					DRAW
+				*/
 
 				function update(){
 					player.y += player.gravity
@@ -215,15 +242,17 @@
 					}
 					if(bulletPlayer.shooting){
 						bulletPlayer.x += bulletPlayer.speed
+						socket.emit('shot', bulletPlayer);
 					}
+					/*
 					if(bulletPlayer.x + bulletPlayer.w > enemy.x && 
 						bulletPlayer.x < enemy.x + enemy.w &&
 						bulletPlayer.y + bulletPlayer.h > enemy.y &&
-						bulletPlayer.y < enemy.y + enemy.h
-					){
+						bulletPlayer.y < enemy.y + enemy.h){
 						console.log('acertou')
 						bulletPlayer.shooting = false;
 					}
+					*/
 					if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
 						bulletPlayer.shooting = false;
 					}
@@ -287,8 +316,19 @@
 				}
 
 				socket.on('position', data => {
-					//console.log(data)
-					enemy = data
+					if(data.name === player.name){
+						player = data
+					}else{
+						enemy = data
+					}
+				})
+
+				socket.on('bullets', data => {
+					if(data.name === player.name){
+						bulletPlayer = data;
+					}else{
+						bulletEnemy = data;
+					}
 				})
 
 				setInterval(function() {
