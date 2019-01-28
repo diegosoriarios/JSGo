@@ -71,13 +71,6 @@
 				FUNCTIONS
 			*/
 
-			function salvarNome(){
-				let nome = document.getElementById('nome').value;
-				player.name = nome;
-				document.getElementById("canvas").style.display = 'block'
-				document.getElementById("form").style.display = 'none'
-			}
-
 			document.addEventListener('keydown', getKey, false);
 			let input = ''
 
@@ -150,6 +143,8 @@
 			function game(){
 				document.addEventListener('keydown', keyDownHandler, false);
 				document.addEventListener('keyup', keyUpHandler, false);
+				document.removeEventListener('keydown', getKey, false);
+				document.removeEventListener('click', getMousePos, false);
 				function draw(){
 					ctx.fillStyle = "white"
 					ctx.fillRect(0, 0, WIDTH, HEIGHT)
