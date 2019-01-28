@@ -14,27 +14,23 @@ app.use('/', (req, res) => {
 	res.sender('index.html');
 })
 
-let turn = [];
 let clients = []
 
 io.on('connection', socket => {
 	clients.push(socket)
 	console.log('Socket Connectado' + socket.id)
 
+	console.log('Clients', clients.length)
+
 	socket.on('sendPosition', data => {
 		let player = data
 		//console.log(data)
-		turn.push(player)
 		socket.broadcast.emit('position', data);
-		if(turn.length === 2){
-			console.log(turn)
-			
-		}
 	})
 
 	socket.on('shot', data => {
 		var bullets = data;
-		turn.forEach(players => {
+		clients.forEach(players => {
 			if(bullets.x + bullets.w > players.x && 
 				bullets.x < players.x + players.w &&
 				bullets.y + bullets.h > players.y &&
