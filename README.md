@@ -6,3 +6,6 @@ Pulo
 
 EMIT
 - Acho que estou fazendo errado, acho que o enemy acaba sendo sempre o mesmo socket
+
+NOME
+- Preciso checar se o nome é repetido

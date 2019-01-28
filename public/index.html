@@ -102,6 +102,7 @@
 					}else{
 						if(e.keyCode === 13){
 							if(input.length !== 0){
+								///////////////ADICIONAR A VERIFICAÇÃO DO NOME////////////////////////////////////
 								player.name = input;
 								game();
 							}else{
@@ -113,13 +114,15 @@
 				drawName()
 			}
 
-			function getMousePos(evt) {
+			function getMousePos(e) {
 				var rect = canvas.getBoundingClientRect();		
-				var x = evt.clientX - rect.left;
-				var y = evt.clientY - rect.top;
+				var x = e.clientX - rect.left;
+				var y = e.clientY - rect.top;
 				if(x > WIDTH / 2 - 80 && x < WIDTH / 2 + 120 &&
 				   y > HEIGHT / 2 + 50 && y < HEIGHT / 2 + 100){
 					if(input.length !== 0){
+						///////////////ADICIONAR A VERIFICAÇÃO DO NOME////////////////////////////////////
+						player.name = input;
 						game();
 					}else{
 						alert('Digite seu nome')

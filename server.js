@@ -14,7 +14,6 @@ app.use('/', (req, res) => {
 	res.sender('index.html');
 })
 
-const WIDTH = 800
 let turn = [];
 let clients = []
 
