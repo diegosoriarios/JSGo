@@ -43,6 +43,7 @@
 			let keyLeft = false;
 			let shootRight = false;
 			let shootLeft = false;
+			let jumpTime = 0;
 
 			let player = {
 				name: 'player',
@@ -197,8 +198,12 @@
 
 				function update(){
 					player.y += player.gravity
+					if(jumpTime > 10){
+						keyUp = false;
+					}
 					if(player.y + player.h >= HEIGHT){
 						player.gravity = 0;
+						jumpTime = 0;
 					}
 					if(player.y + player.h < HEIGHT && !keyUp){
 						player.gravity = 5;
@@ -221,7 +226,7 @@
 						}
 					}
 					if(keyUp){
-						console.log('JUMP')
+						jumpTime++;
 						player.gravity = -15;
 					}
 					if(keyDown){
