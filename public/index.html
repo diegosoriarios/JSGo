@@ -13,20 +13,13 @@
 		</style>
 	</head>
 	<body>
-		<div id="form">
-			<label>Nome: </label>
-			<input name="nome" id="nome" />
-			<button id="submit" onclick="salvarNome()">Salvar</button>
-		</div>
-		<canvas id="canvas" height="600" width="800" style="display: none"></canvas>
+		<canvas id="canvas" height="600" width="800" ></canvas>
 		<script type="text/javascript">
 			var socket = io('http://localhost:3000')
 
 			const canvas = document.getElementById('canvas')
 			const ctx = canvas.getContext('2d')
-			//canvas.addEventListener('click', getMousePos, false);
-			document.addEventListener('keydown', keyDownHandler, false);
-			document.addEventListener('keyup', keyUpHandler, false);
+			canvas.addEventListener('click', getMousePos, false);
 
 			/*
 				VARIABLES
@@ -52,7 +45,7 @@
 			let shootLeft = false;
 
 			let player = {
-				name: '',
+				name: 'player',
 				//x: Math.floor(Math.random() * WIDTH),
 				//y: Math.floor(Math.random() * HEIGHT),
 				x: 40,
@@ -85,179 +78,242 @@
 				document.getElementById("form").style.display = 'none'
 			}
 
+			document.addEventListener('keydown', getKey, false);
+			let input = ''
 
-			function draw(){
-				ctx.fillStyle = "white"
-				ctx.fillRect(0, 0, WIDTH, HEIGHT)
-				ctx.fillStyle = 'blue'
-				ctx.fillRect(player.x, player.y, player.w, player.h);
-				ctx.font = "20px Georgia";
-				ctx.fillStyle = "black"
-				ctx.fillText(player.name, 20, 40);
-				if(enemy){
-					ctx.fillStyle = "black"
-					ctx.fillText(enemy.name, WIDTH - 80, 40);
-					ctx.fillStyle = 'red'
-					ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+			function getKey(e) {
+				var keycode = parseInt(e.which);
+				if (keycode == 46 || keycode == 8) {
+					e.preventDefault(); //prevent back navigation from backspace
+					input = input.slice(0,input.length-1);
+					console.log(input)
+				}else {
+					if(e.keyCode >= 65 && e.keyCode <= 90){
+						var keycode = parseInt(e.which);
+						if (input.length < 10){
+							input += String.fromCharCode(keycode);
+						}
+					}else{
+						if(e.keyCode === 13){
+							if(input.length !== 0){
+								player.name = input;
+								game();
+							}else{
+								alert('Digite seu nome');
+							}
+						}
+					}
 				}
-				if(bulletPlayer.shooting){
-					ctx.fillStyle = 'black'
-					ctx.fillRect(bulletPlayer.x, bulletPlayer.y, bulletPlayer.w, bulletPlayer.h);
-				}
+				drawName()
 			}
 
-			function update(){
-				player.y += player.gravity
-				if(player.y + player.h >= HEIGHT){
-					player.gravity = 0;
-				}
-				if(player.y + player.h < HEIGHT && !keyUp){
-					player.gravity = 5;
-				}
-				if(player.y + player.h > HEIGHT){
-					player.y = HEIGHT - player.h
-				}
-				if(keyRight) {
-					if(player.x + player.w <= WIDTH){
-						player.x += player.speed
-					}else{
-						keyRight = false;
-					}
-				}
-				if(keyLeft){
-					if(player.x >= 0){
-						player.x -= player.speed
-					}else{
-						keyLeft = false;
-					}
-				}
-				if(keyUp){
-					console.log('JUMP')
-					player.gravity = -15;
-					/*if(player.y >= 0){
-						player.y -= player.speed
-					}else{
-						keyUp = false;
-					}*/
-				}
-				if(keyDown){
-					console.log('Abaixar')
-					if(player.y + player.h <= HEIGHT){
-						player.h = 16;
-						player.y = player.y + (player.h / 2)
-					}
-					/*
-					if(player.y + player.h <= HEIGHT){
-						player.y += player.speed
-					}else{
-						keyDown = false;
-					}
-					*/
-				}
-				if(shootLeft){
-					bulletPlayer.shooting = true;
-					bulletPlayer.x = player.x + (player.w / 2)
-					bulletPlayer.y = player.y + (player.h / 2)
-					bulletPlayer.speed = -8;
-				}
-				if(shootRight){
-					bulletPlayer.shooting = true;
-					bulletPlayer.x = player.x + (player.w / 2)
-					bulletPlayer.y = player.y + (player.h / 2)
-					bulletPlayer.speed = 8;
-				}
-				if(bulletPlayer.shooting){
-					bulletPlayer.x += bulletPlayer.speed
-				}
-				if(bulletPlayer.x + bulletPlayer.w > enemy.x && 
-					bulletPlayer.x < enemy.x + enemy.w &&
-					bulletPlayer.y + bulletPlayer.h > enemy.y &&
-					bulletPlayer.y < enemy.y + enemy.h
-				){
-					console.log('acertou')
-					bulletPlayer.shooting = false;
-				}
-				if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
-					bulletPlayer.shooting = false;
-				}
-			}
-
-			function createbulletPlayer(direction){
-				bulletPlayer.speed = direction
-			}
-
-			/*
 			function getMousePos(evt) {
 				var rect = canvas.getBoundingClientRect();		
-				player.x = evt.clientX - rect.left,
-				player.y = evt.clientY - rect.top
-				ctx.fillRect(player.x, player.y - 12, 24, 24);
-				socket.emit('sendPosition', player);
-			}*/
-
-			/*
-				KEYBOAR HANDLER
-			*/
-			function keyDownHandler(event) {
-				if(event.keyCode == KEYS.right) {
-					keyRight = true;
-				}
-				if(event.keyCode == KEYS.left){
-					if(player.x > 0){
-						keyLeft = true;
-					}					
-				}
-				if(event.keyCode == KEYS.up){
-					if(player.y > 0){
-						keyUp = true;
-					}					
-				}
-				if(event.keyCode == KEYS.down){
-					keyDown = true;
-				}
-				if(!bulletPlayer.shooting){
-					if(event.keyCode === KEYS.shootLeft){
-						shootLeft = true;
-					}
-					if(event.keyCode === KEYS.shootRight){
-						shootRight = true;
+				var x = evt.clientX - rect.left;
+				var y = evt.clientY - rect.top;
+				if(x > WIDTH / 2 - 80 && x < WIDTH / 2 + 120 &&
+				   y > HEIGHT / 2 + 50 && y < HEIGHT / 2 + 100){
+					if(input.length !== 0){
+						game();
+					}else{
+						alert('Digite seu nome')
 					}
 				}
 			}
+			
+			window.onload = function(){
+				drawName()
+			}
 
-			function keyUpHandler(event) {
-				if(event.keyCode == KEYS.right) {
-					keyRight = false;
-				}
-				if(event.keyCode == KEYS.left){
-					keyLeft = false;
-				}
-				if(event.keyCode == KEYS.up){
-					keyUp = false;
-				}
-				if(event.keyCode == KEYS.down){
-					player.y = player.y - (player.h / 2)
-					player.h = 32;
-					keyDown = false;
-				}
-				if(event.keyCode == KEYS.shootLeft){
-					shootLeft = false;
-				}
-				if(event.keyCode == KEYS.shootRight){
-					shootRight = false;
+			function drawName(){
+				ctx.fillStyle = "white"
+				ctx.fillRect(0, 0, WIDTH, HEIGHT)
+				ctx.font = "20px Georgia";
+				ctx.fillStyle = "black"
+				ctx.fillText("Digite seu nome:", WIDTH / 2 - 60, HEIGHT / 2 - 10);
+				ctx.fillStyle = "blue"
+				ctx.fillRect(WIDTH / 2 - 80, HEIGHT / 2 + 50, 200, 50)
+				ctx.font = "20px Georgia";
+				ctx.fillStyle = "white"
+				ctx.fillText("Começar Jogo", WIDTH / 2 - 40, HEIGHT / 2 + 80);
+				if(input.length === 0){
+					ctx.font = "20px Georgia";
+					ctx.fillStyle = "black"
+					ctx.fillText('|', WIDTH / 2 - 60, HEIGHT / 2 + 10);	
+				}else{
+					ctx.font = "20px Georgia";
+					ctx.fillStyle = "black"
+					ctx.fillText(input, WIDTH / 2 - 60, HEIGHT / 2 + 10);
 				}
 			}
 
-			socket.on('position', data => {
-				//console.log(data)
-				enemy = data
-			})
+			function game(){
+				document.addEventListener('keydown', keyDownHandler, false);
+				document.addEventListener('keyup', keyUpHandler, false);
+				function draw(){
+					ctx.fillStyle = "white"
+					ctx.fillRect(0, 0, WIDTH, HEIGHT)
+					ctx.fillStyle = 'blue'
+					ctx.fillRect(player.x, player.y, player.w, player.h);
+					ctx.font = "20px Georgia";
+					ctx.fillStyle = "black"
+					ctx.fillText(player.name, 20, 40);
+					if(enemy){
+						ctx.fillStyle = "black"
+						ctx.fillText(enemy.name, WIDTH - 80, 40);
+						ctx.fillStyle = 'red'
+						ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+					}
+					if(bulletPlayer.shooting){
+						ctx.fillStyle = 'black'
+						ctx.fillRect(bulletPlayer.x, bulletPlayer.y, bulletPlayer.w, bulletPlayer.h);
+					}
+				}
 
-			setInterval(function() {
-				socket.emit('sendPosition', player);
-				update()
-				draw()
-			}, 1000/60)
+				function update(){
+					player.y += player.gravity
+					if(player.y + player.h >= HEIGHT){
+						player.gravity = 0;
+					}
+					if(player.y + player.h < HEIGHT && !keyUp){
+						player.gravity = 5;
+					}
+					if(player.y + player.h > HEIGHT){
+						player.y = HEIGHT - player.h
+					}
+					if(keyRight) {
+						if(player.x + player.w <= WIDTH){
+							player.x += player.speed
+						}else{
+							keyRight = false;
+						}
+					}
+					if(keyLeft){
+						if(player.x >= 0){
+							player.x -= player.speed
+						}else{
+							keyLeft = false;
+						}
+					}
+					if(keyUp){
+						console.log('JUMP')
+						player.gravity = -15;
+						/*if(player.y >= 0){
+							player.y -= player.speed
+						}else{
+							keyUp = false;
+						}*/
+					}
+					if(keyDown){
+						console.log('Abaixar')
+						if(player.y + player.h <= HEIGHT){
+							player.h = 16;
+							player.y = player.y + (player.h / 2)
+						}
+						/*
+						if(player.y + player.h <= HEIGHT){
+							player.y += player.speed
+						}else{
+							keyDown = false;
+						}
+						*/
+					}
+					if(shootLeft){
+						bulletPlayer.shooting = true;
+						bulletPlayer.x = player.x + (player.w / 2)
+						bulletPlayer.y = player.y + (player.h / 2)
+						bulletPlayer.speed = -8;
+					}
+					if(shootRight){
+						bulletPlayer.shooting = true;
+						bulletPlayer.x = player.x + (player.w / 2)
+						bulletPlayer.y = player.y + (player.h / 2)
+						bulletPlayer.speed = 8;
+					}
+					if(bulletPlayer.shooting){
+						bulletPlayer.x += bulletPlayer.speed
+					}
+					if(bulletPlayer.x + bulletPlayer.w > enemy.x && 
+						bulletPlayer.x < enemy.x + enemy.w &&
+						bulletPlayer.y + bulletPlayer.h > enemy.y &&
+						bulletPlayer.y < enemy.y + enemy.h
+					){
+						console.log('acertou')
+						bulletPlayer.shooting = false;
+					}
+					if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
+						bulletPlayer.shooting = false;
+					}
+				}
+
+				function createbulletPlayer(direction){
+					bulletPlayer.speed = direction
+				}
+
+				/*
+					KEYBOAR HANDLER
+				*/
+				function keyDownHandler(event) {
+					if(event.keyCode == KEYS.right) {
+						keyRight = true;
+					}
+					if(event.keyCode == KEYS.left){
+						if(player.x > 0){
+							keyLeft = true;
+						}					
+					}
+					if(event.keyCode == KEYS.up){
+						if(player.y > 0){
+							keyUp = true;
+						}					
+					}
+					if(event.keyCode == KEYS.down){
+						keyDown = true;
+					}
+					if(!bulletPlayer.shooting){
+						if(event.keyCode === KEYS.shootLeft){
+							shootLeft = true;
+						}
+						if(event.keyCode === KEYS.shootRight){
+							shootRight = true;
+						}
+					}
+				}
+
+				function keyUpHandler(event) {
+					if(event.keyCode == KEYS.right) {
+						keyRight = false;
+					}
+					if(event.keyCode == KEYS.left){
+						keyLeft = false;
+					}
+					if(event.keyCode == KEYS.up){
+						keyUp = false;
+					}
+					if(event.keyCode == KEYS.down){
+						player.y = player.y - (player.h / 2)
+						player.h = 32;
+						keyDown = false;
+					}
+					if(event.keyCode == KEYS.shootLeft){
+						shootLeft = false;
+					}
+					if(event.keyCode == KEYS.shootRight){
+						shootRight = false;
+					}
+				}
+
+				socket.on('position', data => {
+					//console.log(data)
+					enemy = data
+				})
+
+				setInterval(function() {
+					socket.emit('sendPosition', player);
+					update()
+					draw()
+				}, 1000/60)
+			}
 		</script>
 	</body>
 </html>
