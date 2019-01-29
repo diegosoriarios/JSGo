@@ -43,7 +43,7 @@ io.on('connection', socket => {
 		let player = data
 		//console.log(data)
 		socket.broadcast.emit('position', data);
-		let sort = Math.floor(Math.random() * 25);
+		let sort = Math.floor(Math.random() * 100);
 		if(sort === 7){
 			if(!hasPowerUp){
 				socket.broadcast.emit('powerUpSend', power)
