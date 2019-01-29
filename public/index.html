@@ -16,18 +16,14 @@
 		<canvas id="canvas" height="640" width="960" ></canvas>
 		<script type="text/javascript">
 			var socket = io('http://localhost:3000')
-
 			const canvas = document.getElementById('canvas')
 			const ctx = canvas.getContext('2d')
-			canvas.addEventListener('click', getMousePos, false);
-
 			/*
 				VARIABLES
 			*/
 
 			const HEIGHT = 640
 			const WIDTH = 960
-
 			const KEYS = {
 				up: 87,
 				down: 83,
@@ -37,6 +33,7 @@
 				shootLeft: 37
 			}
 
+			let input = ''
 			let keyUp = false;
 			let keyDown = false;
 			let keyRight = false;
@@ -45,23 +42,6 @@
 			let shootLeft = false;
 			let jumpTime = 0;
 			let terrain = [];
-
-			function createMap(){
-				terrain.push({x: 0, 					y: 0, 				w: 1, 			h: HEIGHT	});
-				terrain.push({x: 0, 					y: HEIGHT - 2, 		w: WIDTH, 		h: 50		});
-				terrain.push({x: WIDTH - 1, 			y: 0, 				w: 1, 			h: HEIGHT	});
-				terrain.push({x: 0, 					y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
-				terrain.push({x: WIDTH - (WIDTH / 2.5), y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
-				terrain.push({x: 0, 					y: HEIGHT - 192, 	w: 96, 			h: 32		});
-				terrain.push({x: WIDTH - 96, 			y: HEIGHT - 192, 	w: 96, 			h: 32		});
-				terrain.push({x: 192, 					y: HEIGHT - 288, 	w: 96, 			h: 32		});
-				terrain.push({x: WIDTH - 192 - 96, 		y: HEIGHT - 288, 	w: 96, 			h: 32		});
-				terrain.push({x: 0, 					y: HEIGHT - 384, 	w: 96, 			h: 32		});
-				terrain.push({x: WIDTH / 2 - 37, 		y: HEIGHT - 384, 	w: 96, 			h: 32		});
-				terrain.push({x: WIDTH - 96, 			y: HEIGHT - 384, 	w: 96, 			h: 32		});
-				terrain.push({x: WIDTH - 96 - 192, 		y: HEIGHT - 480, 	w: 96, 			h: 32		});
-				terrain.push({x: 192, 					y: HEIGHT - 480, 	w: 96, 			h: 32		});
-			}
 
 			let player = {
 				name: 'player',
@@ -102,9 +82,30 @@
 			/*
 				FUNCTIONS
 			*/
-
+			
+			canvas.addEventListener('click', getMousePos, false);
 			document.addEventListener('keydown', getKey, false);
-			let input = ''
+
+			window.onload = function(){
+				drawName()
+			}
+			
+			function createMap(){
+				terrain.push({x: 0, 					y: 0, 				w: 1, 			h: HEIGHT	});
+				terrain.push({x: 0, 					y: HEIGHT - 2, 		w: WIDTH, 		h: 50		});
+				terrain.push({x: WIDTH - 1, 			y: 0, 				w: 1, 			h: HEIGHT	});
+				terrain.push({x: 0, 					y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
+				terrain.push({x: WIDTH - (WIDTH / 2.5), y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
+				terrain.push({x: 0, 					y: HEIGHT - 192, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 96, 			y: HEIGHT - 192, 	w: 96, 			h: 32		});
+				terrain.push({x: 192, 					y: HEIGHT - 288, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 192 - 96, 		y: HEIGHT - 288, 	w: 96, 			h: 32		});
+				terrain.push({x: 0, 					y: HEIGHT - 384, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH / 2 - 37, 		y: HEIGHT - 384, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 96, 			y: HEIGHT - 384, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 96 - 192, 		y: HEIGHT - 480, 	w: 96, 			h: 32		});
+				terrain.push({x: 192, 					y: HEIGHT - 480, 	w: 96, 			h: 32		});
+			}
 
 			function getKey(e) {
 				var keycode = parseInt(e.which);
@@ -149,10 +150,6 @@
 						alert('Digite seu nome')
 					}
 				}
-			}
-			
-			window.onload = function(){
-				drawName()
 			}
 
 			function drawName(){
@@ -217,7 +214,7 @@
 				}
 
 				/*
-					DRAW
+					UPDATE
 				*/
 
 				function update(){
