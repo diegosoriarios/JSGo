@@ -46,20 +46,22 @@
 			let jumpTime = 0;
 			let terrain = [];
 
-			terrain.push({x: 0, 					y: 0, 				w: 1, 			h: HEIGHT	});
-			terrain.push({x: 0, 					y: HEIGHT - 2, 		w: WIDTH, 		h: 50		});
-			terrain.push({x: WIDTH - 1, 			y: 0, 				w: 1, 			h: HEIGHT	});
-			terrain.push({x: 0, 					y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
-			terrain.push({x: WIDTH - (WIDTH / 2.5), y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
-			terrain.push({x: 0, 					y: HEIGHT - 192, 	w: 96, 			h: 32		});
-			terrain.push({x: WIDTH - 96, 			y: HEIGHT - 192, 	w: 96, 			h: 32		});
-			terrain.push({x: 192, 					y: HEIGHT - 288, 	w: 96, 			h: 32		});
-			terrain.push({x: WIDTH - 192 - 96, 		y: HEIGHT - 288, 	w: 96, 			h: 32		});
-			terrain.push({x: 0, 					y: HEIGHT - 384, 	w: 96, 			h: 32		});
-			terrain.push({x: WIDTH / 2 - 37, 		y: HEIGHT - 384, 	w: 96, 			h: 32		});
-			terrain.push({x: WIDTH - 96, 			y: HEIGHT - 384, 	w: 96, 			h: 32		});
-			terrain.push({x: WIDTH - 96 - 192, 		y: HEIGHT - 480, 	w: 96, 			h: 32		});
-			terrain.push({x: 192, 					y: HEIGHT - 480, 	w: 96, 			h: 32		});
+			function createMap(){
+				terrain.push({x: 0, 					y: 0, 				w: 1, 			h: HEIGHT	});
+				terrain.push({x: 0, 					y: HEIGHT - 2, 		w: WIDTH, 		h: 50		});
+				terrain.push({x: WIDTH - 1, 			y: 0, 				w: 1, 			h: HEIGHT	});
+				terrain.push({x: 0, 					y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
+				terrain.push({x: WIDTH - (WIDTH / 2.5), y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
+				terrain.push({x: 0, 					y: HEIGHT - 192, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 96, 			y: HEIGHT - 192, 	w: 96, 			h: 32		});
+				terrain.push({x: 192, 					y: HEIGHT - 288, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 192 - 96, 		y: HEIGHT - 288, 	w: 96, 			h: 32		});
+				terrain.push({x: 0, 					y: HEIGHT - 384, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH / 2 - 37, 		y: HEIGHT - 384, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 96, 			y: HEIGHT - 384, 	w: 96, 			h: 32		});
+				terrain.push({x: WIDTH - 96 - 192, 		y: HEIGHT - 480, 	w: 96, 			h: 32		});
+				terrain.push({x: 192, 					y: HEIGHT - 480, 	w: 96, 			h: 32		});
+			}
 
 			let player = {
 				name: 'player',
@@ -122,6 +124,7 @@
 							if(input.length !== 0){
 								///////////////ADICIONAR A VERIFICAÇÃO DO NOME////////////////////////////////////
 								player.name = input;
+								createMap();
 								game();
 							}else{
 								alert('Digite seu nome');
@@ -141,6 +144,7 @@
 					if(input.length !== 0){
 						///////////////ADICIONAR A VERIFICAÇÃO DO NOME////////////////////////////////////
 						player.name = input;
+						createMap();
 						game();
 					}else{
 						alert('Digite seu nome')
