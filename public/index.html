@@ -229,10 +229,13 @@
 							//jumpTime = 0;
 							//player.y = terrain[i].y - player.h
 				        } else if (dir === "t") {
-				            //player.gravity = 0;
-							jumpTime = 0;
-							player.y = terrain[i].y - player.h
+				            player.gravity = 0;
+							jumpTime = 30;
+							player.y = terrain[i].y + terrain[i].h
+							keyUp = false;
 				        } else if (dir === "b") {
+							console.log('em cima')
+				            //player.gravity = 0;
 							jumpTime = 0;
 							player.y = terrain[i].y - player.h
 				        }
@@ -243,7 +246,7 @@
 						keyUp = false;
 					}
 					if(player.y + player.h >= HEIGHT){
-						player.gravity = 0;
+						//player.gravity = 0;
 						jumpTime = 0;
 					}
 					if(player.y + player.h < HEIGHT && !keyUp){
