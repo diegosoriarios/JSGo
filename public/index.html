@@ -44,6 +44,22 @@
 			let shootRight = false;
 			let shootLeft = false;
 			let jumpTime = 0;
+			let terrain = [];
+
+			terrain.push({x: 0, 					y: 0, 				w: 1, 			h: HEIGHT	});
+			terrain.push({x: 0, 					y: HEIGHT - 2, 		w: WIDTH, 		h: 50		});
+			terrain.push({x: WIDTH - 1, 			y: 0, 				w: 1, 			h: HEIGHT	});
+			terrain.push({x: 0, 					y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
+			terrain.push({x: WIDTH - (WIDTH / 2.5), y: HEIGHT - 96, 	w: WIDTH / 2.5, h: 32		});
+			terrain.push({x: 0, 					y: HEIGHT - 192, 	w: 96, 			h: 32		});
+			terrain.push({x: WIDTH - 96, 			y: HEIGHT - 192, 	w: 96, 			h: 32		});
+			terrain.push({x: 192, 					y: HEIGHT - 288, 	w: 96, 			h: 32		});
+			terrain.push({x: WIDTH - 192 - 96, 		y: HEIGHT - 288, 	w: 96, 			h: 32		});
+			terrain.push({x: 0, 					y: HEIGHT - 384, 	w: 96, 			h: 32		});
+			terrain.push({x: WIDTH / 2 - 37, 		y: HEIGHT - 384, 	w: 96, 			h: 32		});
+			terrain.push({x: WIDTH - 96, 			y: HEIGHT - 384, 	w: 96, 			h: 32		});
+			terrain.push({x: WIDTH - 96 - 192, 		y: HEIGHT - 480, 	w: 96, 			h: 32		});
+			terrain.push({x: 192, 					y: HEIGHT - 480, 	w: 96, 			h: 32		});
 
 			let player = {
 				name: 'player',
@@ -190,6 +206,10 @@
 						ctx.fillStyle = 'black'
 						ctx.fillRect(bulletEnemy.x, bulletEnemy.y, bulletEnemy.w, bulletEnemy.h);
 					}
+					terrain.forEach(value => {
+						ctx.fillStyle = 'black'
+						ctx.fillRect(value.x, value.y, value.w, value.h);
+					})
 				}
 
 				/*
@@ -197,6 +217,27 @@
 				*/
 
 				function update(){
+					for (var i = 0; i < terrain.length; i++) {
+				    	
+				        ctx.rect(terrain[i].x, terrain[i].y, terrain[i].w, terrain[i].h);
+				        
+				        
+				        var dir = colCheck(player, terrain[i]);
+				        if (dir === "l" || dir === "r") {
+							console.log('here')
+				            //player.gravity = 0;
+							//jumpTime = 0;
+							//player.y = terrain[i].y - player.h
+				        } else if (dir === "t") {
+				            //player.gravity = 0;
+							jumpTime = 0;
+							player.y = terrain[i].y - player.h
+				        } else if (dir === "b") {
+							jumpTime = 0;
+							player.y = terrain[i].y - player.h
+				        }
+					}
+
 					player.y += player.gravity
 					if(jumpTime > 10){
 						keyUp = false;
@@ -321,6 +362,40 @@
 					if(event.keyCode == KEYS.shootRight){
 						shootRight = false;
 					}
+				}
+
+				function colCheck(shapeA, shapeB) {
+				    
+				    var vX = (shapeA.x + (shapeA.w / 2)) - (shapeB.x + (shapeB.w / 2)),
+				        vY = (shapeA.y + (shapeA.h / 2)) - (shapeB.y + (shapeB.h / 2)),
+				        
+				        hWidths = (shapeA.w / 2) + (shapeB.w / 2),
+				        hHeights = (shapeA.h / 2) + (shapeB.h / 2),
+				        colDir = null;
+				    
+				    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+				        
+				        var oX = hWidths - Math.abs(vX),
+				            oY = hHeights - Math.abs(vY);
+				        if (oX >= oY) {
+				            if (vY > 0) {
+				                colDir = "t";
+				                shapeA.y += oY;
+				            } else {
+				                colDir = "b";
+				                shapeA.y -= oY;
+				            }
+				        } else {
+				            if (vX > 0) {
+				                colDir = "l";
+				                shapeA.x += oX;
+				            } else {
+				                colDir = "r";
+				                shapeA.x -= oX;
+				            }
+				        }
+				    }
+				    return colDir;
 				}
 
 				socket.on('position', data => {
