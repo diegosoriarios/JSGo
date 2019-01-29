@@ -32,6 +32,19 @@
 				shoot: 32,
 			}
 
+			const powerUp = [
+				{x: 128, 			y: 128, 			w: 32, h: 32},
+				{x: WIDTH - 160, 	y: 100, 			w: 32, h: 32},
+				{x: (WIDTH / 2), 	y: HEIGHT - 480, 	w: 32, h: 32},
+				{x: 50, 			y: HEIGHT - 140, 	w: 32, h: 32},
+				{x: WIDTH - 82, 	y: HEIGHT - 140, 	w: 32, h: 32},
+				{x: WIDTH / 2, 		y: HEIGHT - 140, 	w: 32, h: 32},
+				{x: 240, 			y: HEIGHT - 200, 	w: 32, h: 32},
+				{x: WIDTH - 272, 	y: HEIGHT - 200, 	w: 32, h: 32},
+				{x: 240, 			y: HEIGHT - 400, 	w: 32, h: 32},
+				{x: WIDTH - 272, 	y: HEIGHT - 400, 	w: 32, h: 32},
+			]
+
 			let input = ''
 			let keyUp = false;
 			let keyDown = false;
@@ -40,6 +53,7 @@
 			let shoot = false;
 			let jumpTime = 0;
 			let terrain = [];
+			let power = []
 
 			let player = {
 				name: 'player',
@@ -210,6 +224,11 @@
 						ctx.fillStyle = 'black'
 						ctx.fillRect(value.x, value.y, value.w, value.h);
 					})
+					//POWER UP
+					if(power){
+						ctx.fillStyle = "green"
+						ctx.fillRect(power.x, power.y, power.w, power.h)
+					}
 				}
 
 				/*
@@ -224,7 +243,6 @@
 				        
 				        var dir = colCheck(player, terrain[i]);
 				        if (dir === "l" || dir === "r") {
-							console.log('here')
 				            //player.gravity = 0;
 							//jumpTime = 0;
 							//player.y = terrain[i].y - player.h
@@ -234,7 +252,6 @@
 							player.y = terrain[i].y + terrain[i].h
 							keyUp = false;
 				        } else if (dir === "b") {
-							console.log('em cima')
 				            //player.gravity = 0;
 							jumpTime = 0;
 							player.y = terrain[i].y - player.h
@@ -303,15 +320,19 @@
 						bulletPlayer.x += bulletPlayer.speed
 						socket.emit('shot', bulletPlayer);
 					}
-					/*
-					if(bulletPlayer.x + bulletPlayer.w > enemy.x && 
-						bulletPlayer.x < enemy.x + enemy.w &&
-						bulletPlayer.y + bulletPlayer.h > enemy.y &&
-						bulletPlayer.y < enemy.y + enemy.h){
-						console.log('acertou')
-						bulletPlayer.shooting = false;
+					if(power.length !== 0){
+						if(player.x + player.w > power.x && 
+							player.x < power.x + power.w &&
+							player.y + player.h > power.y &&
+							player.y < power.y + power.h){
+							console.log('acertou')
+							power = []
+							socket.emit('getPower', power)
+						}
 					}
-					*/
+					if(power.length === 0){
+						socket.emit('getPower', power)
+					}
 					if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
 						bulletPlayer.shooting = false;
 					}
@@ -421,6 +442,12 @@
 					}
 				})
 
+				socket.on('powerUpSend', data => {
+					if(data !== null){
+						power = data
+					}
+				})
+				
 				setInterval(function() {
 					socket.emit('sendPosition', player);
 					update()

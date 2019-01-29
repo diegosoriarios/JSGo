@@ -15,6 +15,23 @@ app.use('/', (req, res) => {
 })
 
 let clients = []
+const WIDTH = 960;
+const HEIGHT = 640;
+const powerUp = [
+	{x: 128, 			y: 128, 			w: 32, h: 32},
+	{x: WIDTH - 160, 	y: 100, 			w: 32, h: 32},
+	{x: (WIDTH / 2), 	y: HEIGHT - 480, 	w: 32, h: 32},
+	{x: 50, 			y: HEIGHT - 140, 	w: 32, h: 32},
+	{x: WIDTH - 82, 	y: HEIGHT - 140, 	w: 32, h: 32},
+	{x: WIDTH / 2, 		y: HEIGHT - 140, 	w: 32, h: 32},
+	{x: 240, 			y: HEIGHT - 200, 	w: 32, h: 32},
+	{x: WIDTH - 272, 	y: HEIGHT - 200, 	w: 32, h: 32},
+	{x: 240, 			y: HEIGHT - 400, 	w: 32, h: 32},
+	{x: WIDTH - 272, 	y: HEIGHT - 400, 	w: 32, h: 32},
+]
+let hasPowerUp = false;
+let random = Math.floor(Math.random() * 11);
+let power = powerUp[random]
 
 io.on('connection', socket => {
 	clients.push(socket)
@@ -26,6 +43,20 @@ io.on('connection', socket => {
 		let player = data
 		//console.log(data)
 		socket.broadcast.emit('position', data);
+		let sort = Math.floor(Math.random() * 25);
+		if(sort === 7){
+			if(!hasPowerUp){
+				socket.broadcast.emit('powerUpSend', power)
+				hasPowerUp = true;
+			}
+		}
+	})
+
+	socket.on('getPower', data => {
+		random = Math.floor(Math.random() * 11);
+		power = powerUp[random]
+		hasPowerUp = false;
+
 	})
 
 	socket.on('shot', data => {
