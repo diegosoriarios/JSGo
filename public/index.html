@@ -13,81 +13,174 @@
 		</style>
 	</head>
 	<body>
-		<canvas id="canvas" height="640" width="960" ></canvas>
+		<canvas id="canvas" height="640" width="960"></canvas>
 		<script type="text/javascript">
 			var socket = io('http://localhost:3000')
-
-			const canvas = document.getElementById('canvas')
-			const ctx = canvas.getContext('2d')
-			canvas.addEventListener('click', getMousePos, false);
-
 			/*
 				VARIABLES
 			*/
+			canvas = document.getElementById("canvas");
+		    ctx = canvas.getContext("2d");
+		    canvas.addEventListener('click', getMousePos, false);
+				    var canvas,
+				    ctx,
+				    width,
+				    status,
+				    height,
+				    player,
+				    princess,
+				    keys,
+				    terrain,
+				    bumpers,
+				    evil,
+				    bullet,
+				    evilBullet,
+				    friction,
+				    gravity,
+				    enemy,
+				    enemy2,
+				    enemy3,
+				    sniper,
+				    hellfire;
+				    width = 800;
+				    status = 'playing';
+				    height = 600;
+				    player = {
+				    	color: '#B9DAFB',
+				        x: 0,
+				        y: height/2,
+				        width: 30,
+				        height: 30,
+				        speed: 6,
+				        velX: 0,
+				        velY: 0,
+				        jumping: false,
+				        grounded: false,
+				        facing: 'right',
+				        shot: false,
+				        name: '',
+				        hp: 100
+				    };
+				    princess = {
+				    	color: '#F5ABC7',
+				    	width: 30,
+				    	height: 30,
+				    	x: width - 31,
+				    	y: 50
+				    };
+				    keys = [];
+				    terrain = [];
+				    bumpers = [];
+				    evil = [];
+				    bullet = {
+				    	color: '#FDDD32',
+				    	width: 10,
+				    	height: 10,
+				    	x: -10,
+				    	y: -10,
+				    	speed: 8,
+				    	direction: null
+				    };
+				    evilBullet = {
+				    	x: -10,
+				    	y: -10,
+				    	width: 10,
+				    	height: 10,
+				    	speed: 8,
+				    	mortal: false	
+				    };
+				    friction = 0.8;
+				    gravity = 0.8;
+				    enemy = {};
+				    hellfire = {
+				    	x: 266,
+				    	y: height - 40,
+				    	width: width - 266,
+				    	height: 40,
+				    	mortal: false
+				    };
 
-			const HEIGHT = 640
-			const WIDTH = 960
+					/*enemies into evil for collision
+					evil.push(enemy);
+					evil.push(hellfire);
+					evil.push(enemy2);
+					evil.push(enemy3);
+					evil.push(sniper);
+					evil.push(evilBullet);
 
-			const KEYS = {
-				up: 87,
-				down: 83,
-				right: 68,
-				left: 65,
-				shootRight: 39,
-				shootLeft: 37
-			}
+					*/
+					
+					evil.push(hellfire);
+					//bumpers[invisible terrain] for enemy patrols
+					bumpers.push({
+						x: 276,
+						y: 360,
+						width: 40,
+						height: 40
+					});
 
-			let keyUp = false;
-			let keyDown = false;
-			let keyRight = false;
-			let keyLeft = false;
-			let shootRight = false;
-			let shootLeft = false;
-			let jumpTime = 0;
+					bumpers.push({
+						x: 516,
+						y: 360,
+						width: 40,
+						height: 40
+					});
 
-			let player = {
-				name: 'player',
-				//x: Math.floor(Math.random() * WIDTH),
-				//y: Math.floor(Math.random() * HEIGHT),
-				x: 40,
-				y: 40,
-				speed: 2,
-				w: 32,
-				h: 32,
-				gravity: 4,
-				hp: 100,
-			}
+					bumpers.push({
+						x: 356,
+						y: 40,
+						width: 40,
+						height: 40
+					});
+					bumpers.push({
+						x: 596,
+						y: 40,
+						width: 40,
+						height: 40
+					});
 
-			let bulletPlayer = {
-				name: player.name,
-				x: player.x + (player.w / 2),
-				y: player.y + (player.h / 2),
-				w: 4,
-				h: 4,
-				speed: 2,
-				shooting: false,
-				hp: 100,
-			}
 
-			let enemy = {}
+					// Terrain
 
-			let bulletEnemy = {
-				name: enemy.name,
-				x: enemy.x + (player.w / 2),
-				y: enemy.y + (player.h / 2),
-				w: 4,
-				h: 4,
-				speed: 2,
-				shooting: false,
-			}
+					//left-wall
+					terrain.push({
+					    x: 0,
+					    y: 0,
+					    width: 1,
+					    height: height
+					});
+					//floor
+					terrain.push({
+					    x: 0,
+					    y: height - 2,
+					    width: width,
+					    height: 50
+					});
+					//right-wall
+					terrain.push({
+					    x: width - 1,
+					    y: 0,
+					    width: 1,
+					    height: height
+					});
+
+					terrain.push({
+					    x: 0,
+					    y: height - 40,
+					    width: 100,
+					    height: 10
+					});
+
+
+					canvas.width = width;
+					canvas.height = height;
+
 
 			/*
 				FUNCTIONS
 			*/
-
 			document.addEventListener('keydown', getKey, false);
 			let input = ''
-
 			function getKey(e) {
 				var keycode = parseInt(e.which);
 				if (keycode == 46 || keycode == 8) {
@@ -114,13 +207,12 @@
 				}
 				drawName()
 			}
-
 			function getMousePos(e) {
 				var rect = canvas.getBoundingClientRect();		
 				var x = e.clientX - rect.left;
 				var y = e.clientY - rect.top;
-				if(x > WIDTH / 2 - 80 && x < WIDTH / 2 + 120 &&
-				   y > HEIGHT / 2 + 50 && y < HEIGHT / 2 + 100){
+				if(x > width / 2 - 80 && x < width / 2 + 120 &&
+				   y > height / 2 + 50 && y < height / 2 + 100){
 					if(input.length !== 0){
 						///////////////ADICIONAR A VERIFICAÇÃO DO NOME////////////////////////////////////
 						player.name = input;
@@ -134,217 +226,311 @@
 			window.onload = function(){
 				drawName()
 			}
-
 			function drawName(){
 				ctx.fillStyle = "white"
-				ctx.fillRect(0, 0, WIDTH, HEIGHT)
+				ctx.fillRect(0, 0, width, height)
 				ctx.font = "20px Georgia";
 				ctx.fillStyle = "black"
-				ctx.fillText("Digite seu nome:", WIDTH / 2 - 60, HEIGHT / 2 - 10);
+				ctx.fillText("Digite seu nome:", width / 2 - 60, height / 2 - 10);
 				ctx.fillStyle = "blue"
-				ctx.fillRect(WIDTH / 2 - 80, HEIGHT / 2 + 50, 200, 50)
+				ctx.fillRect(width / 2 - 80, height / 2 + 50, 200, 50)
 				ctx.font = "20px Georgia";
 				ctx.fillStyle = "white"
-				ctx.fillText("Começar Jogo", WIDTH / 2 - 40, HEIGHT / 2 + 80);
+				ctx.fillText("Começar Jogo", width / 2 - 40, height / 2 + 80);
 				if(input.length === 0){
 					ctx.font = "20px Georgia";
 					ctx.fillStyle = "black"
-					ctx.fillText('|', WIDTH / 2 - 60, HEIGHT / 2 + 10);	
+					ctx.fillText('|', width / 2 - 60, height / 2 + 10);	
 				}else{
 					ctx.font = "20px Georgia";
 					ctx.fillStyle = "black"
-					ctx.fillText(input, WIDTH / 2 - 60, HEIGHT / 2 + 10);
+					ctx.fillText(input, width / 2 - 60, height / 2 + 10);
 				}
+
+
 			}
 
+			//make sure we only initialize the update loop once
 			function game(){
-				document.addEventListener('keydown', keyDownHandler, false);
-				document.addEventListener('keyup', keyUpHandler, false);
-				document.removeEventListener('keydown', getKey, false);
-				document.removeEventListener('click', getMousePos, false);
+				var gameStarted = false;
 
-				/*
-					DRAW
-				*/
-				function draw(){
-					ctx.fillStyle = "white"
-					ctx.fillRect(0, 0, WIDTH, HEIGHT)
-					ctx.fillStyle = 'blue'
-					ctx.fillRect(player.x, player.y, player.w, player.h);
+				//animation frames
+				(function() {
+				    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+				    window.requestAnimationFrame = requestAnimationFrame;
+				})();
+
+				//globals
+				
+
+				//reset function to set/re-set globals 
+				function reset(){
+
+				    
+
+				}
+
+				reset();
+
+				//main game loop
+				function update() {
+					socket.emit('sendPosition', player)
+				    // check player input
+				    if (keys[38] || keys[87]) {
+				        // up arrow
+				        if (!player.jumping && player.grounded) {
+				            player.jumping = true;
+				            player.grounded = false;
+				            player.velY = -player.speed * 2;
+				        }
+				    }
+				    if (keys[39] || keys[68]) {
+				        // right arrow
+				        player.facing = "right";
+				        if (player.velX < player.speed) {
+				            player.velX++;
+				        }
+				    }
+				    if (keys[37] || keys[65]) {
+				        // left arrow
+				        if (player.velX > -player.speed) {
+				            player.velX--;
+				        }
+				        player.facing = "left";
+				    }
+				    if (keys[32]){
+				    	// spacebar
+				    	if(status === 'win'){
+				    		reset();
+				    	}else if(player.shot === false){
+				    		player.shot = true;
+				    		bullet.direction = player.facing;
+				    		bullet.x = player.x + 30;
+				    		bullet.y = player.y + 10;
+				    	}
+
+				    }
+
+				    //Environmental Physics
+				    player.velX *= friction;
+				    player.velY += gravity;
+
+				    //Clear-canvas and prepare for re-draw
+				    ctx.clearRect(0, 0, width, height);
+				    ctx.fillStyle = "black";
+				    ctx.beginPath();
+
+				    //terrain & terrain collision
+				    player.grounded = false;
+				    for (var i = 0; i < terrain.length; i++) {
+				    	//draw terrain
+				        ctx.rect(terrain[i].x, terrain[i].y, terrain[i].width, terrain[i].height);
+				        
+				        //player-terrain collision
+				        var dir = colCheck(player, terrain[i]);
+
+				        if (dir === "l" || dir === "r") {
+				            player.velX = 0;
+				            player.jumping = false;
+				        } else if (dir === "t") {
+				            player.velY *= -1;
+				        } else if (dir === "b") {
+				            player.grounded = true;
+				            player.jumping = false;
+				        }
+
+				        //bullet-terrain collision
+				        var dth = colCheck(bullet, terrain[i]);
+
+				        if (dth != null) {
+				            player.shot = false;
+				        }
+
+				        //evil-bullet-terrain collision
+				        var dte = colCheck(evilBullet, terrain[i]);
+
+				        if (dte != null){
+				        	sniper.shot = false;
+				        }
+
+
+				        //enemy-terrain collision
+				        var dbz = colCheck(enemy, terrain[i]);
+
+				        if (dbz === "l" || dbz === "r") {
+
+				        } else if (dbz === "t") {
+				            enemy.direction = 'down';
+				        } else if (dbz === "b") {
+				            enemy.direction = 'up';
+				        }
+
+				    }
+
+				    //check player/princess collision
+			        var love = colCheck(player, princess);
+
+			        //if the player has reached the princess set the game status to win
+			        if (love != null) {
+			        	status = 'win';
+			        }
+
+				    
+
+				    //check player/evil collision
+				    for (var i = 0; i < evil.length; i++) {
+				        
+				        var dir = colCheck(player, evil[i]);
+
+				        if (dir != null) {
+				            resetPlayer();
+				        }
+
+				        //check bullet/evil collision
+				        if(evil[i].mortal){
+				        	var dth = colCheck(bullet, evil[i]);
+					        if (dth === "l" || dth === "r") {
+					            evil[i].alive = false;
+					            player.shot = false;
+					        } else if (dth === "t") {
+					            evil[i].alive = false;
+					            player.shot = false;
+					        } else if (dth === "b") {
+					            evil[i].alive = false;
+					            player.shot = false;
+					        }
+
+					        //if killed teleport corpse off-screen
+				        	if(!evil[i].alive){
+					        	evil[i].x = -500;
+					        	evil[i].y = -500;
+				        	}
+				        }
+
+				    }
+
+				    
+				    //Player Actions
+				    if(player.grounded){
+				         player.velY = 0;
+				    }
+				    
+				    player.x += player.velX;
+				    player.y += player.velY;
+
+				    if(player.shot){
+				    	if(bullet.direction === 'right'){
+				    		bullet.x += bullet.speed;
+				    	}else if(bullet.direction === 'left'){
+				    		bullet.x -= bullet.speed;
+				    	}
+				    }
+
+				    ctx.fill();
+
+				    //if player has shot, draw bullet
+				    if(player.shot){
+				    	ctx.fillStyle = bullet.color;
+				    	ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+				    }
+
+				    //draw Enemies
+				    if(enemy !== {}){
+						ctx.fillStyle = "black"
+						ctx.fillText(enemy.name, width - 80, 40);
+						ctx.fillText(enemy.hp, width - 80, 80);
+						ctx.fillStyle = 'red'
+						ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+					}
+					evil.forEach(value => {
+						ctx.fillStyle = 'red'
+						ctx.fillRect(value.x, value.y, value.width, value.height);
+					})
+
+				    //draw Player
+				    ctx.fillStyle = player.color;
+				    ctx.fillRect(player.x, player.y, player.width, player.height);
 					ctx.font = "20px Georgia";
 					ctx.fillStyle = "black"
 					ctx.fillText(player.name, 20, 40);
 					ctx.fillText(player.hp, 20, 80);
-					if(enemy !== {}){
-						ctx.fillStyle = "black"
-						ctx.fillText(enemy.name, WIDTH - 80, 40);
-						ctx.fillText(enemy.hp, WIDTH - 80, 80);
-						ctx.fillStyle = 'red'
-						ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
-					}
-					if(bulletPlayer.shooting){
-						ctx.fillStyle = 'black'
-						ctx.fillRect(bulletPlayer.x, bulletPlayer.y, bulletPlayer.w, bulletPlayer.h);
-					}
-					if(bulletEnemy.shooting){
-						ctx.fillStyle = 'black'
-						ctx.fillRect(bulletEnemy.x, bulletEnemy.y, bulletEnemy.w, bulletEnemy.h);
-					}
+
+				    //draw Victory
+				    if(status === 'win'){
+				    	ctx.fillStyle = '#000';
+				    	ctx.fillRect(0, 0, width, height);
+				    	ctx.fillStyle = '#fff';
+				    	ctx.font = '20pt Helvetica';
+				    	ctx.textAlign = 'center';
+				    	ctx.fillText("VICTORY", width/2, height/2);
+				    	ctx.fillText("Press Space to Retry", width/2, height/2 + 40);
+				    }
+
+				    requestAnimationFrame(update);
 				}
 
-				/*
-					DRAW
-				*/
-
-				function update(){
-					player.y += player.gravity
-					if(jumpTime > 10){
-						keyUp = false;
-					}
-					if(player.y + player.h >= HEIGHT){
-						player.gravity = 0;
-						jumpTime = 0;
-					}
-					if(player.y + player.h < HEIGHT && !keyUp){
-						player.gravity = 5;
-					}
-					if(player.y + player.h > HEIGHT){
-						player.y = HEIGHT - player.h
-					}
-					if(keyRight) {
-						if(player.x + player.w <= WIDTH){
-							player.x += player.speed
-						}else{
-							keyRight = false;
-						}
-					}
-					if(keyLeft){
-						if(player.x >= 0){
-							player.x -= player.speed
-						}else{
-							keyLeft = false;
-						}
-					}
-					if(keyUp){
-						jumpTime++;
-						player.gravity = -15;
-					}
-					if(keyDown){
-						console.log('Abaixar')
-						if(player.y + player.h <= HEIGHT){
-							player.h = 16;
-							player.y = player.y + (player.h / 2)
-						}
-					}
-					if(shootLeft){
-						bulletPlayer.shooting = true;
-						bulletPlayer.x = player.x + (player.w / 2)
-						bulletPlayer.y = player.y + (player.h / 2)
-						bulletPlayer.speed = -8;
-					}
-					if(shootRight){
-						bulletPlayer.shooting = true;
-						bulletPlayer.x = player.x + (player.w / 2)
-						bulletPlayer.y = player.y + (player.h / 2)
-						bulletPlayer.speed = 8;
-					}
-					if(bulletPlayer.shooting){
-						bulletPlayer.x += bulletPlayer.speed
-						socket.emit('shot', bulletPlayer);
-					}
-					/*
-					if(bulletPlayer.x + bulletPlayer.w > enemy.x && 
-						bulletPlayer.x < enemy.x + enemy.w &&
-						bulletPlayer.y + bulletPlayer.h > enemy.y &&
-						bulletPlayer.y < enemy.y + enemy.h){
-						console.log('acertou')
-						bulletPlayer.shooting = false;
-					}
-					*/
-					if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
-						bulletPlayer.shooting = false;
-					}
+				//if player hit by evil, re-spawn
+				function resetPlayer(){
+					player.x = 0;
+					player.y = height/2;
 				}
 
-				function createbulletPlayer(direction){
-					bulletPlayer.speed = direction
+				//collision detection
+				function colCheck(shapeA, shapeB) {
+				    // get the vectors to check against
+				    var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
+				        vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
+				        // add the half widths and half heights of the objects
+				        hWidths = (shapeA.width / 2) + (shapeB.width / 2),
+				        hHeights = (shapeA.height / 2) + (shapeB.height / 2),
+				        colDir = null;
+
+				    // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+				    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+				        // figures out on which side we are colliding (top, bottom, left, or right)
+				        var oX = hWidths - Math.abs(vX),
+				            oY = hHeights - Math.abs(vY);
+				        if (oX >= oY) {
+				            if (vY > 0) {
+				                colDir = "t";
+				                shapeA.y += oY;
+				            } else {
+				                colDir = "b";
+				                shapeA.y -= oY;
+				            }
+				        } else {
+				            if (vX > 0) {
+				                colDir = "l";
+				                shapeA.x += oX;
+				            } else {
+				                colDir = "r";
+				                shapeA.x -= oX;
+				            }
+				        }
+				    }
+				    return colDir;
 				}
 
-				/*
-					KEYBOAR HANDLER
-				*/
-				function keyDownHandler(event) {
-					if(event.keyCode == KEYS.right) {
-						keyRight = true;
-					}
-					if(event.keyCode == KEYS.left){
-						if(player.x > 0){
-							keyLeft = true;
-						}					
-					}
-					if(event.keyCode == KEYS.up){
-						if(player.y > 0){
-							keyUp = true;
-						}					
-					}
-					if(event.keyCode == KEYS.down){
-						keyDown = true;
-					}
-					if(!bulletPlayer.shooting){
-						if(event.keyCode === KEYS.shootLeft){
-							shootLeft = true;
-						}
-						if(event.keyCode === KEYS.shootRight){
-							shootRight = true;
-						}
-					}
+				//keyboard handling
+				document.body.addEventListener("keydown", function (e) {
+				    keys[e.keyCode] = true;
+				});
+
+				document.body.addEventListener("keyup", function (e) {
+				    keys[e.keyCode] = false;
+				});
+
+			update();
+			socket.on('position', data => {
+				if(data.name === player.name){
+					player = data
+				}else{
+					console.log(data)
+					enemy = data
 				}
-
-				function keyUpHandler(event) {
-					if(event.keyCode == KEYS.right) {
-						keyRight = false;
-					}
-					if(event.keyCode == KEYS.left){
-						keyLeft = false;
-					}
-					if(event.keyCode == KEYS.up){
-						keyUp = false;
-					}
-					if(event.keyCode == KEYS.down){
-						player.y = player.y - (player.h / 2)
-						player.h = 32;
-						keyDown = false;
-					}
-					if(event.keyCode == KEYS.shootLeft){
-						shootLeft = false;
-					}
-					if(event.keyCode == KEYS.shootRight){
-						shootRight = false;
-					}
-				}
-
-				socket.on('position', data => {
-					if(data.name === player.name){
-						player = data
-					}else{
-						enemy = data
-					}
-				})
-
-				socket.on('bullets', data => {
-					if(data.name === player.name){
-						bulletPlayer = data;
-					}else{
-						bulletEnemy = data;
-					}
-				})
-
-				setInterval(function() {
-					socket.emit('sendPosition', player);
-					update()
-					draw()
-				}, 1000/60)
+			})
 			}
+
 		</script>
 	</body>
 </html>
