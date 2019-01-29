@@ -60,20 +60,9 @@ io.on('connection', socket => {
 	})
 
 	socket.on('shot', data => {
-		var bullets = data;
-		clients.forEach(players => {
-			if(bullets.x + bullets.w > players.x && 
-				bullets.x < players.x + players.w &&
-				bullets.y + bullets.h > players.y &&
-				bullets.y < players.y + players.h){
-					if(players.name !== bullets.name){
-						bullets.shooting = false;
-						players.hp -= Math.floor(Math.random() * 11 + 1);
-						socket.broadcast.emit('position', players);
-					}
-			}
-		})
-		socket.broadcast.emit('bullets', data);
+		console.log(data)
+		data.hp -= 10;
+		socket.broadcast.emit('position', data);
 	})
 
 	socket.on('disconnect', () => {

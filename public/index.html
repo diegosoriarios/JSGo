@@ -318,18 +318,24 @@
 					}
 					if(bulletPlayer.shooting){
 						bulletPlayer.x += bulletPlayer.speed
-						socket.emit('shot', bulletPlayer);
 					}
 					if(power.length !== 0){
 						if(player.x + player.w > power.x && 
 							player.x < power.x + power.w &&
 							player.y + player.h > power.y &&
 							player.y < power.y + power.h){
-							console.log('acertou')
 							power = []
 							socket.emit('getPower', power)
 						}
 					}
+					if(bulletPlayer.x + bulletPlayer.w > enemy.x && 
+						bulletPlayer.x < enemy.x + enemy.w &&
+						bulletPlayer.y + bulletPlayer.h > enemy.y &&
+						bulletPlayer.y < enemy.y + enemy.h && bulletPlayer.shooting){
+						console.log('acertou')
+						bulletPlayer.shooting = false;
+						socket.emit('shot', enemy)
+					} 
 					if(power.length === 0){
 						socket.emit('getPower', power)
 					}
