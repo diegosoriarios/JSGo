@@ -83,6 +83,7 @@
 				speed: 2,
 				shooting: false,
 				hp: 100,
+				jumping: false,
 			}
 
 			let enemy = {}
@@ -242,8 +243,14 @@
 					}
 
 					player.y += player.gravity
-					if(jumpTime > 10){
+					if(player.jumping){
+						player.speed = 3;
+					}else{
+						player.speed = 2;
+					}
+					if(jumpTime > 18){
 						keyUp = false;
+						player.jumping = false;
 					}
 					if(player.y + player.h >= HEIGHT){
 						//player.gravity = 0;
@@ -271,7 +278,7 @@
 					}
 					if(keyUp){
 						jumpTime++;
-						player.gravity = -15;
+						player.gravity = -8;
 					}
 					if(keyDown){
 						console.log('Abaixar')
@@ -329,6 +336,7 @@
 					if(event.keyCode == KEYS.up){
 						if(player.y > 0){
 							keyUp = true;
+							player.jumping = true;
 						}					
 					}
 					if(event.keyCode == KEYS.down){
@@ -352,7 +360,7 @@
 						keyLeft = false;
 					}
 					if(event.keyCode == KEYS.up){
-						keyUp = false;
+						//keyUp = false;
 					}
 					if(event.keyCode == KEYS.down){
 						player.y = player.y - (player.h / 2)
