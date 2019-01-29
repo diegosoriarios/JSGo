@@ -29,8 +29,7 @@
 				down: 83,
 				right: 68,
 				left: 65,
-				shootRight: 39,
-				shootLeft: 37
+				shoot: 32,
 			}
 
 			let input = ''
@@ -38,8 +37,7 @@
 			let keyDown = false;
 			let keyRight = false;
 			let keyLeft = false;
-			let shootRight = false;
-			let shootLeft = false;
+			let shoot = false;
 			let jumpTime = 0;
 			let terrain = [];
 
@@ -55,6 +53,7 @@
 				gravity: 4,
 				hp: 100,
 				jumping: false,
+				face: 'right'
 			}
 
 			let bulletPlayer = {
@@ -89,7 +88,7 @@
 			window.onload = function(){
 				drawName()
 			}
-			
+
 			function createMap(){
 				terrain.push({x: 0, 					y: 0, 				w: 1, 			h: HEIGHT	});
 				terrain.push({x: 0, 					y: HEIGHT - 2, 		w: WIDTH, 		h: 50		});
@@ -287,17 +286,18 @@
 							player.y = player.y + (player.h / 2)
 						}
 					}
-					if(shootLeft){
-						bulletPlayer.shooting = true;
-						bulletPlayer.x = player.x + (player.w / 2)
-						bulletPlayer.y = player.y + (player.h / 2)
-						bulletPlayer.speed = -8;
-					}
-					if(shootRight){
-						bulletPlayer.shooting = true;
-						bulletPlayer.x = player.x + (player.w / 2)
-						bulletPlayer.y = player.y + (player.h / 2)
-						bulletPlayer.speed = 8;
+					if(shoot){
+						if(player.face === 'left'){
+							bulletPlayer.shooting = true;
+							bulletPlayer.x = player.x + (player.w / 2)
+							bulletPlayer.y = player.y + (player.h / 2)
+							bulletPlayer.speed = -8;
+						}else{
+							bulletPlayer.shooting = true;
+							bulletPlayer.x = player.x + (player.w / 2)
+							bulletPlayer.y = player.y + (player.h / 2)
+							bulletPlayer.speed = 8;
+						}
 					}
 					if(bulletPlayer.shooting){
 						bulletPlayer.x += bulletPlayer.speed
@@ -327,10 +327,12 @@
 				function keyDownHandler(event) {
 					if(event.keyCode == KEYS.right) {
 						keyRight = true;
+						player.face = 'right';
 					}
 					if(event.keyCode == KEYS.left){
 						if(player.x > 0){
 							keyLeft = true;
+							player.face = 'left';
 						}					
 					}
 					if(event.keyCode == KEYS.up){
@@ -343,11 +345,8 @@
 						keyDown = true;
 					}
 					if(!bulletPlayer.shooting){
-						if(event.keyCode === KEYS.shootLeft){
-							shootLeft = true;
-						}
-						if(event.keyCode === KEYS.shootRight){
-							shootRight = true;
+						if(event.keyCode === KEYS.shoot){
+							shoot = true;
 						}
 					}
 				}
@@ -367,11 +366,8 @@
 						player.h = 32;
 						keyDown = false;
 					}
-					if(event.keyCode == KEYS.shootLeft){
-						shootLeft = false;
-					}
-					if(event.keyCode == KEYS.shootRight){
-						shootRight = false;
+					if(event.keyCode == KEYS.shoot){
+						shoot = false;
 					}
 				}
 
