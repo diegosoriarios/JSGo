@@ -40,7 +40,6 @@ io.on('connection', socket => {
 	console.log('Clients', clients.length)
 
 	socket.on('sendPosition', data => {
-		let player = data
 		//console.log(data)
 		socket.broadcast.emit('position', data);
 		let sort = Math.floor(Math.random() * 100);

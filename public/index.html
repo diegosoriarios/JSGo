@@ -284,11 +284,7 @@
 				*/
 
 				function update(){
-					for (var i = 0; i < terrain.length; i++) {
-				    	
-				        ctx.rect(terrain[i].x, terrain[i].y, terrain[i].w, terrain[i].h);
-				        
-				        
+					for (var i = 0; i < terrain.length; i++) {				    	
 				        var dir = colCheck(player, terrain[i]);
 				        if (dir === "l" || dir === "r") {
 				            //player.gravity = 0;
@@ -307,10 +303,6 @@
 					}
 
 					for (var i = 0; i < evil.length; i++) {
-				    	
-				        ctx.rect(evil[i].x, evil[i].y, evil[i].w, evil[i].h);
-				        
-				        
 				        var dir = colCheck(player, evil[i]);
 				        if (dir === "l" || dir === "r") {
 				            player.y = 40;
@@ -408,10 +400,6 @@
 					if(bulletPlayer.x > WIDTH || bulletPlayer.x < 0){
 						bulletPlayer.shooting = false;
 					}
-				}
-
-				function createbulletPlayer(direction){
-					bulletPlayer.speed = direction
 				}
 
 				/*
