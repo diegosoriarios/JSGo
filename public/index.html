@@ -161,6 +161,20 @@
 							}else{
 								alert('Digite seu nome');
 							}
+						}else{
+							if(e.keyCode == 37){
+								selected++
+								if(selected === avatars.length){
+									selected = 0;
+								}
+							}else{
+								if(e.keyCode == 39){
+									selected--
+									if(selected === -1){
+										selected = avatars.length - 1;
+									}
+								}
+							}
 						}
 					}
 				}
