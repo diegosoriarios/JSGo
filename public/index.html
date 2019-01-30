@@ -47,7 +47,7 @@
 
 			const avatars = [
 				'https://api.adorable.io/avatars/285/player%40adorable.io',
-				'https://api.adorable.io/avatars/285/player%40adorable.io',
+				'https://api.adorable.io/avatars/285/enemy%40adorable.io',
 				'https://api.adorable.io/avatars/285/diego%40adorable.io',
 				'https://api.adorable.io/avatars/285/game%40adorable.io',
 			]
@@ -63,7 +63,7 @@
 			let evil = [];
 			let power = [];
 			let avatarImg = [];
-			let selected;
+			let selected = 0;
 
 			let player = {
 				img: 'https://api.adorable.io/avatars/285/player%40adorable.io',
@@ -215,7 +215,7 @@
 					ctx.drawImage(img, WIDTH / 1.6 - (96 * i), HEIGHT / 2 + 160, 64, 64);
 					if(i === selected){
 						ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
-						ctx.fillRect(WIDTH / 1.6 - (96 * i), HEIGHT / 2 + 160, 64, 64);	
+						ctx.fillRect(WIDTH / 1.6 - (96 * i) - 8, HEIGHT / 2 + 160 - 8, 80, 80);	
 					}
 				})
 			}

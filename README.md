@@ -1,6 +1,9 @@
 Colisão bala
 - Talvez adicionar um "nome" pra bala, e se ela acertar alguem que seja diferente do nome dela da dano.
 
+PowerUp
+- if(powerUp === false) cria power e manda pra o servidor e o servidor seta powerUp = true
+
 Pulo
 - Arrumar pulo
 
