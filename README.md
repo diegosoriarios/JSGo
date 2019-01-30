@@ -6,3 +6,5 @@ Pulo
 
 NOME
 - Preciso checar se o nome é repetido
+
+[Comunicação](https://www.npmjs.com/package/shelljs)
