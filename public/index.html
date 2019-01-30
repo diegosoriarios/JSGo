@@ -60,8 +60,9 @@
 			let shoot = false;
 			let jumpTime = 0;
 			let terrain = [];
-			let power = []
-			let avatarImg = []
+			let evil = [];
+			let power = [];
+			let avatarImg = [];
 			let selected;
 
 			let player = {
@@ -132,6 +133,9 @@
 				terrain.push({x: WIDTH - 96, 			y: HEIGHT - 384, 	w: 96, 			h: 32		});
 				terrain.push({x: WIDTH - 96 - 192, 		y: HEIGHT - 480, 	w: 96, 			h: 32		});
 				terrain.push({x: 192, 					y: HEIGHT - 480, 	w: 96, 			h: 32		});
+				evil.push({x: 0, y: HEIGHT - 32, w: WIDTH, h: 32, color: 'red'});
+				evil.push({x: 192, y: HEIGHT - 128, w: 32, h: 32, color: 'brown'});
+				evil.push({x: WIDTH / 2, y: HEIGHT - 416, w: 32, h: 32, color: 'brown'});
 			}
 
 			function getKey(e) {
@@ -264,6 +268,10 @@
 						ctx.fillStyle = 'black'
 						ctx.fillRect(value.x, value.y, value.w, value.h);
 					})
+					evil.forEach(value => {
+						ctx.fillStyle = value.color
+						ctx.fillRect(value.x, value.y, value.w, value.h);
+					})
 					//POWER UP
 					if(power){
 						ctx.fillStyle = "green"
@@ -295,6 +303,27 @@
 				            //player.gravity = 0;
 							jumpTime = 0;
 							player.y = terrain[i].y - player.h
+				        }
+					}
+
+					for (var i = 0; i < evil.length; i++) {
+				    	
+				        ctx.rect(evil[i].x, evil[i].y, evil[i].w, evil[i].h);
+				        
+				        
+				        var dir = colCheck(player, evil[i]);
+				        if (dir === "l" || dir === "r") {
+				            //player.gravity = 0;
+							//jumpTime = 0;
+							//player.y = terrain[i].y - player.h
+				        } else if (dir === "t") {
+				            //player.gravity = 0;
+							jumpTime = 30;
+							player.y = terrain[i].y + terrain[i].h
+							keyUp = false;
+				        } else if (dir === "b") {
+				            player.y = 40;
+							player.x = Math.floor(Math.random() * WIDTH);
 				        }
 					}
 
