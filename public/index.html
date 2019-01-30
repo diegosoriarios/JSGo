@@ -45,6 +45,13 @@
 				{x: WIDTH - 272, 	y: HEIGHT - 400, 	w: 32, h: 32},
 			]
 
+			const avatars = [
+				'https://api.adorable.io/avatars/285/player%40adorable.io',
+				'https://api.adorable.io/avatars/285/player%40adorable.io',
+				'https://api.adorable.io/avatars/285/diego%40adorable.io',
+				'https://api.adorable.io/avatars/285/game%40adorable.io',
+			]
+
 			let input = ''
 			let keyUp = false;
 			let keyDown = false;
@@ -54,8 +61,11 @@
 			let jumpTime = 0;
 			let terrain = [];
 			let power = []
+			let avatarImg = []
+			let selected;
 
 			let player = {
+				img: 'https://api.adorable.io/avatars/285/player%40adorable.io',
 				name: 'player',
 				x: Math.floor(Math.random() * WIDTH),
 				//y: Math.floor(Math.random() * HEIGHT),
@@ -94,11 +104,16 @@
 			/*
 				FUNCTIONS
 			*/
-			
+
 			canvas.addEventListener('click', getMousePos, false);
 			document.addEventListener('keydown', getKey, false);
 
 			window.onload = function(){
+				avatars.map(img => {
+					let image = new Image()
+					image.src = img
+					avatarImg.push(image)
+				})
 				drawName()
 			}
 
@@ -137,6 +152,7 @@
 								///////////////ADICIONAR A VERIFICAÇÃO DO NOME////////////////////////////////////
 								player.name = input;
 								createMap();
+								clearInterval(menu);
 								game();
 							}else{
 								alert('Digite seu nome');
@@ -144,7 +160,6 @@
 						}
 					}
 				}
-				drawName()
 			}
 
 			function getMousePos(e) {
@@ -157,11 +172,19 @@
 						///////////////ADICIONAR A VERIFICAÇÃO DO NOME////////////////////////////////////
 						player.name = input;
 						createMap();
+						clearInterval(menu);
 						game();
 					}else{
 						alert('Digite seu nome')
 					}
 				}
+				avatarImg.forEach((img, i) => {
+					if(x > WIDTH / 1.6 - (96 * i) && y > HEIGHT / 2 + 16 && 
+					   x < (WIDTH / 1.6 - (96 * i)) + 64 && (HEIGHT / 2 + 16) + 64){
+						   selected = i;
+						   player.img = avatars[selected]
+					   }
+				})
 			}
 
 			function drawName(){
@@ -184,7 +207,16 @@
 					ctx.fillStyle = "black"
 					ctx.fillText(input, WIDTH / 2 - 60, HEIGHT / 2 + 10);
 				}
+				avatarImg.forEach((img, i) => {
+					ctx.drawImage(img, WIDTH / 1.6 - (96 * i), HEIGHT / 2 + 160, 64, 64);
+					if(i === selected){
+						ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+						ctx.fillRect(WIDTH / 1.6 - (96 * i), HEIGHT / 2 + 160, 64, 64);	
+					}
+				})
 			}
+
+			var menu = setInterval(drawName, 1000/60);
 
 			function game(){
 				document.addEventListener('keydown', keyDownHandler, false);
@@ -196,20 +228,29 @@
 					DRAW
 				*/
 				function draw(){
+					var playerImage = new Image();
+					playerImage.src = player.img
+
 					ctx.fillStyle = "white"
 					ctx.fillRect(0, 0, WIDTH, HEIGHT)
-					ctx.fillStyle = 'blue'
-					ctx.fillRect(player.x, player.y, player.w, player.h);
+					//ctx.fillStyle = 'blue'
+					//ctx.fillRect(player.x, player.y, player.w, player.h);
+					ctx.drawImage(playerImage, player.x, player.y, player.w, player.h);
 					ctx.font = "20px Georgia";
 					ctx.fillStyle = "black"
 					ctx.fillText(player.name, 20, 40);
 					ctx.fillText(player.hp, 20, 80);
 					if(enemy !== {}){
+						//Load enemy Image
+						var enemyImage = new Image();
+						enemyImage.src = enemy.img
+
 						ctx.fillStyle = "black"
 						ctx.fillText(enemy.name, WIDTH - 80, 40);
 						ctx.fillText(enemy.hp, WIDTH - 80, 80);
-						ctx.fillStyle = 'red'
-						ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+						//ctx.fillStyle = 'red'
+						//ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
+						ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.w, enemy.h);
 					}
 					if(bulletPlayer.shooting){
 						ctx.fillStyle = 'black'
