@@ -63,10 +63,10 @@
 			let evil = [];
 			let power = [];
 			let avatarImg = [];
-			let selected = 0;
+			let selected = avatars.length - 1;
 
 			let player = {
-				img: 'https://api.adorable.io/avatars/285/player%40adorable.io',
+				img: 'https://api.adorable.io/avatars/285/game%40adorable.io',
 				name: 'player',
 				x: Math.floor(Math.random() * WIDTH),
 				//y: Math.floor(Math.random() * HEIGHT),
@@ -313,14 +313,11 @@
 				        
 				        var dir = colCheck(player, evil[i]);
 				        if (dir === "l" || dir === "r") {
-				            //player.gravity = 0;
-							//jumpTime = 0;
-							//player.y = terrain[i].y - player.h
+				            player.y = 40;
+							player.x = Math.floor(Math.random() * WIDTH);
 				        } else if (dir === "t") {
-				            //player.gravity = 0;
-							jumpTime = 30;
-							player.y = terrain[i].y + terrain[i].h
-							keyUp = false;
+				            player.y = 40;
+							player.x = Math.floor(Math.random() * WIDTH);
 				        } else if (dir === "b") {
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
