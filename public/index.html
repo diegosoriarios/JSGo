@@ -311,12 +311,15 @@
 					for (var i = 0; i < evil.length; i++) {
 				        var dir = colCheck(player, evil[i]);
 				        if (dir === "l" || dir === "r") {
+							socket.emit('blood', {x: player.x, y: player.y})
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
 				        } else if (dir === "t") {
+							socket.emit('blood', {x: player.x, y: player.y})
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
 				        } else if (dir === "b") {
+							socket.emit('blood', {x: player.x, y: player.y})
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
 				        }
