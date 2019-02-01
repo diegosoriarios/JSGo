@@ -277,10 +277,12 @@
 						//ctx.fillStyle = 'red'
 						//ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
 						ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.w, enemy.h);
-						enemy.blood.forEach(drop => {
-							ctx.fillStyle = "red"
-							ctx.fillRect(drop.x, drop.y, drop.w, drop.h)
-						})
+						if(enemy.blood != undefined){
+							enemy.blood.forEach(drop => {
+								ctx.fillStyle = "red"
+								ctx.fillRect(drop.x, drop.y, drop.w, drop.h)
+							})
+						}
 					}
 					if(bulletPlayer.shooting){
 						ctx.fillStyle = 'black'
@@ -369,21 +371,42 @@
 						}
 						if(blood[i].x < 0 || blood[i].x > WIDTH || blood[i].y < 0 || blood[i].y > HEIGHT){
 							blood.splice(i, 1)
-						}
-						if(blood[i].speedX !== 0 || blood[i].speedY !== 0){
-							if(blood[i].x >= player.x && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
-								let alt = Math.abs((player.y + player.h) - blood[i].y )
-								if(player.blood.length <= 16 && Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
-									player.blood.push({x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt})
-								}
-							}else{
-								if(blood[i].x <= player.x + player.w && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
-									blood[i].x = player.x + player.h - blood[i].w;
-									if(player.blood.length <= 16 && Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
-										let alt = Math.abs((player.y + player.h) - blood[i].y )
-										player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
+						}else{
+							if(blood[i].speedX !== 0 || blood[i].speedY !== 0){
+								if(blood[i].x >= player.x && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
+									let alt = Math.abs((player.y + player.h) - blood[i].y )
+									console.log(player.blood.length)
+									if(player.blood.length <= 16){
+										if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
+											player.blood.push({x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt})
+										}
+									}else{
+										if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
+											let x = Math.floor(Math.random() * 17);
+											player.blood[x] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
+										}else{
+											let x = Math.floor(Math.random() * 17);
+											player.blood[x] = {x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt}
+										}
 									}
-								}	
+								}else{
+									if(blood[i].x <= player.x + player.w && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
+										blood[i].x = player.x + player.h - blood[i].w;
+										let alt = Math.abs((player.y + player.h) - blood[i].y )
+										if(player.blood.length <= 16){
+											if(Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
+												player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
+											}
+										}else{
+											if(Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
+												player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
+											}else{
+												let x = Math.floor(Math.random() * 17);
+												player.blood[x] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
+											}
+										}
+									}	
+								}
 							}
 						}
 					}
