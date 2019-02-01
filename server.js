@@ -43,12 +43,28 @@ io.on('connection', socket => {
 		//console.log(data)
 		socket.broadcast.emit('position', data);
 		let sort = Math.floor(Math.random() * 100);
+		sort = 7;
 		if(sort === 7){
 			if(!hasPowerUp){
-				socket.broadcast.emit('powerUpSend', power)
+				io.emit('powerUpSend', power)
 				hasPowerUp = true;
 			}
 		}
+	})
+
+	socket.on('blood', data => {
+		let x = data.x;
+		let y = data.y;
+		let blood = []
+		for(var i = 0; i < 32; i++){
+			var numX = Math.floor(Math.random()* 15) + 1;
+			var numY = Math.floor(Math.random()* 15) + 1;
+			numX *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+			numY *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+			blood.push({x: x + (i * 4), y: y + (i * 4), w: 4, h: 4, speedX: numX, speedY: numY})
+		}
+		console.log(blood)
+		io.emit('addBlood', blood)
 	})
 
 	socket.on('getPower', data => {

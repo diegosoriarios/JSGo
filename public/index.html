@@ -32,19 +32,6 @@
 				shoot: 32,
 			}
 
-			const powerUp = [
-				{x: 128, 			y: 128, 			w: 32, h: 32},
-				{x: WIDTH - 160, 	y: 100, 			w: 32, h: 32},
-				{x: (WIDTH / 2), 	y: HEIGHT - 480, 	w: 32, h: 32},
-				{x: 50, 			y: HEIGHT - 140, 	w: 32, h: 32},
-				{x: WIDTH - 82, 	y: HEIGHT - 140, 	w: 32, h: 32},
-				{x: WIDTH / 2, 		y: HEIGHT - 140, 	w: 32, h: 32},
-				{x: 240, 			y: HEIGHT - 200, 	w: 32, h: 32},
-				{x: WIDTH - 272, 	y: HEIGHT - 200, 	w: 32, h: 32},
-				{x: 240, 			y: HEIGHT - 400, 	w: 32, h: 32},
-				{x: WIDTH - 272, 	y: HEIGHT - 400, 	w: 32, h: 32},
-			]
-
 			const avatars = [
 				'https://api.adorable.io/avatars/285/player%40adorable.io',
 				'https://api.adorable.io/avatars/285/enemy%40adorable.io',
@@ -64,6 +51,7 @@
 			let power = [];
 			let avatarImg = [];
 			let selected = avatars.length - 1;
+			let blood = []
 
 			let player = {
 				img: 'https://api.adorable.io/avatars/285/game%40adorable.io',
@@ -251,6 +239,14 @@
 
 					ctx.fillStyle = "white"
 					ctx.fillRect(0, 0, WIDTH, HEIGHT)
+					terrain.forEach(value => {
+						ctx.fillStyle = 'black'
+						ctx.fillRect(value.x, value.y, value.w, value.h);
+					})
+					blood.forEach(drop => {
+						ctx.fillStyle = "red"
+						ctx.fillRect(drop.x, drop.y, drop.w, drop.h)
+					})
 					//ctx.fillStyle = 'blue'
 					//ctx.fillRect(player.x, player.y, player.w, player.h);
 					ctx.drawImage(playerImage, player.x, player.y, player.w, player.h);
@@ -278,10 +274,6 @@
 						ctx.fillStyle = 'black'
 						ctx.fillRect(bulletEnemy.x, bulletEnemy.y, bulletEnemy.w, bulletEnemy.h);
 					}
-					terrain.forEach(value => {
-						ctx.fillStyle = 'black'
-						ctx.fillRect(value.x, value.y, value.w, value.h);
-					})
 					evil.forEach(value => {
 						ctx.fillStyle = value.color
 						ctx.fillRect(value.x, value.y, value.w, value.h);
@@ -312,7 +304,7 @@
 				        } else if (dir === "b") {
 				            //player.gravity = 0;
 							jumpTime = 0;
-							player.y = terrain[i].y - player.h
+							player.y = terrain[i].y - (player.h + 4)
 				        }
 					}
 
@@ -328,6 +320,27 @@
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
 				        }
+					}
+
+					for(var i = 0; i < blood.length; i++){
+						blood[i].y += blood[i].speedY
+						blood[i].x += blood[i].speedX
+						for(var j = 0; j < terrain.length; j++){
+							var dir = colCheck(blood[i], terrain[j]);
+							if (dir === "l" || dir === "r") {
+								blood[i].speedY = 0
+								blood[i].speedX = 0
+							} else if (dir === "t") {
+								blood[i].speedY = 0
+								blood[i].speedX = 0
+							} else if (dir === "b") {
+								blood[i].speedY = 0
+								blood[i].speedX = 0
+							}
+						}
+						if(blood[i].x < 0 || blood[i].x > WIDTH || blood[i].y < 0 || blood[i].y > HEIGHT){
+							blood.splice(i, 1)
+						}
 					}
 
 					player.y += player.gravity
@@ -407,6 +420,7 @@
 						console.log('acertou')
 						bulletPlayer.shooting = false;
 						socket.emit('shot', enemy)
+						socket.emit('blood', {x: enemy.x, y: enemy.y})
 					} 
 					if(power.length === 0){
 						socket.emit('getPower', power)
@@ -514,6 +528,12 @@
 					}else{
 						bulletEnemy = data;
 					}
+				})
+
+				socket.on('addBlood', data => {
+					data.forEach(value => {
+						blood.push(value)
+					})
 				})
 
 				socket.on('powerUpSend', data => {
