@@ -52,6 +52,7 @@
 			let avatarImg = [];
 			let selected = avatars.length - 1;
 			let blood = []
+			let time = 180 * 60;
 
 			let player = {
 				img: 'https://api.adorable.io/avatars/285/game%40adorable.io',
@@ -239,6 +240,10 @@
 
 					ctx.fillStyle = "white"
 					ctx.fillRect(0, 0, WIDTH, HEIGHT)
+					ctx.font = "20px Georgia";
+					ctx.fillStyle = "black"
+					ctx.fillText(Math.floor(time / 60), WIDTH / 2, 40);
+
 					terrain.forEach(value => {
 						ctx.fillStyle = 'black'
 						ctx.fillRect(value.x, value.y, value.w, value.h);
@@ -546,6 +551,7 @@
 				})
 				
 				setInterval(function() {
+					time--;
 					socket.emit('sendPosition', player);
 					update()
 					draw()
