@@ -373,39 +373,57 @@
 							blood.splice(i, 1)
 						}else{
 							if(blood[i].speedX !== 0 || blood[i].speedY !== 0){
-								if(blood[i].x >= player.x && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
-									let alt = Math.abs((player.y + player.h) - blood[i].y )
+								if(blood[i].y < player.y && blood[i].x > player.x && blood[i].x < player.x + player.w){
+									let alt = Math.abs((player.x + player.w) - blood[i].x )
 									console.log(player.blood.length)
 									if(player.blood.length <= 16){
 										if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
-											player.blood.push({x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt})
+											player.blood.push({x: player.x + alt, y: player.y, h: 4, w: 4, alt: alt})
 										}
 									}else{
 										if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
 											let x = Math.floor(Math.random() * 17);
-											player.blood[x] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
+											player.blood[x] = {x: player.x + alt, y: player.y, h: 4, w: 4, alt: alt}
 										}else{
 											let x = Math.floor(Math.random() * 17);
-											player.blood[x] = {x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt}
+											player.blood[x] = {x: player.x + player.h - blood[i].w - alt, y: player.y, h: 4, w: 4, alt: alt}
 										}
 									}
 								}else{
-									if(blood[i].x <= player.x + player.w && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
-										blood[i].x = player.x + player.h - blood[i].w;
+									if(blood[i].x >= player.x && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
 										let alt = Math.abs((player.y + player.h) - blood[i].y )
+										console.log(player.blood.length)
 										if(player.blood.length <= 16){
-											if(Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
-												player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
+											if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
+												player.blood.push({x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt})
 											}
 										}else{
-											if(Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
-												player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
-											}else{
+											if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
 												let x = Math.floor(Math.random() * 17);
 												player.blood[x] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
+											}else{
+												let x = Math.floor(Math.random() * 17);
+												player.blood[x] = {x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt}
 											}
 										}
-									}	
+									}else{
+										if(blood[i].x <= player.x + player.w && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
+											blood[i].x = player.x + player.h - blood[i].w;
+											let alt = Math.abs((player.y + player.h) - blood[i].y )
+											if(player.blood.length <= 16){
+												if(Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
+													player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
+												}
+											}else{
+												if(Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
+													player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
+												}else{
+													let x = Math.floor(Math.random() * 17);
+													player.blood[x] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
+												}
+											}
+										}	
+									}
 								}
 							}
 						}
@@ -417,10 +435,16 @@
 						if(drop.y + drop.h > player.y + player.h){
 							drop.y = player.y + player.h - drop.h
 						}
-						if(drop.x > player.x + (player.w / 2)){
+						if(drop.x > player.x + player.w){
 							drop.x = player.x + player.w - drop.w;
 						}else{
-							drop.x = player.x
+							if(drop.x + drop.w < player.x){
+								drop.x = player.x
+							}else{
+								if(drop.x > player.x && drop.y > player.y){
+									drop.y = player.y
+								}
+							}
 						}
 					})
 					if(player.jumping){
