@@ -62,8 +62,12 @@ io.on('connection', socket => {
 			numX *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
 			numY *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
 			blood.push({x: x + (i * 4), y: y + (i * 4), w: 4, h: 4, speedX: numX, speedY: numY})
+			x = x + (i * 4) - Math.floor(Math.random() * 32) + 4
+			x *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+			y = y + (i * 4) - Math.floor(Math.random() * 32) + 4
+			y *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+			blood.push({x: x, y: y, w: 4, h: 4, speedX: 0, speedY: 0})
 		}
-		console.log(blood)
 		io.emit('addBlood', blood)
 	})
 
