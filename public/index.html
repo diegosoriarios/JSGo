@@ -132,7 +132,6 @@
 				if (keycode == 46 || keycode == 8) {
 					e.preventDefault(); //prevent back navigation from backspace
 					input = input.slice(0,input.length-1);
-					console.log(input)
 				}else {
 					if(e.keyCode >= 65 && e.keyCode <= 90){
 						var keycode = parseInt(e.which);
@@ -390,7 +389,6 @@
 						player.gravity = -8;
 					}
 					if(keyDown){
-						console.log('Abaixar')
 						if(player.y + player.h <= HEIGHT){
 							player.h = 16;
 							player.y = player.y + (player.h / 2)
@@ -425,7 +423,6 @@
 						bulletPlayer.x < enemy.x + enemy.w &&
 						bulletPlayer.y + bulletPlayer.h > enemy.y &&
 						bulletPlayer.y < enemy.y + enemy.h && bulletPlayer.shooting){
-						console.log('acertou')
 						bulletPlayer.shooting = false;
 						socket.emit('shot', enemy)
 						socket.emit('blood', {x: enemy.x, y: enemy.y})
