@@ -228,7 +228,7 @@
 				document.addEventListener('keydown', keyDownHandler, false);
 				document.addEventListener('keyup', keyUpHandler, false);
 				document.removeEventListener('keydown', getKey, false);
-				document.removeEventListener('click', getMousePos, false);
+				canvas.removeEventListener('click', getMousePos, false);
 
 				/*
 					DRAW
