@@ -67,7 +67,8 @@
 				hp: 100,
 				jumping: false,
 				face: 'right',
-				mortes: 0
+				mortes: 0,
+				blood: []
 			}
 
 			let bulletPlayer = {
@@ -255,6 +256,10 @@
 					//ctx.fillStyle = 'blue'
 					//ctx.fillRect(player.x, player.y, player.w, player.h);
 					ctx.drawImage(playerImage, player.x, player.y, player.w, player.h);
+					player.blood.forEach(drop => {
+						ctx.fillStyle = "red";
+						ctx.fillRect(drop.x, drop.y, drop.w, drop.h)
+					})
 					ctx.font = "20px Georgia";
 					ctx.fillStyle = "black"
 					ctx.fillText(player.name, 20, 40);
@@ -272,6 +277,10 @@
 						//ctx.fillStyle = 'red'
 						//ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
 						ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.w, enemy.h);
+						enemy.blood.forEach(drop => {
+							ctx.fillStyle = "red"
+							ctx.fillRect(drop.x, drop.y, drop.w, drop.h)
+						})
 					}
 					if(bulletPlayer.shooting){
 						ctx.fillStyle = 'black'
@@ -297,9 +306,10 @@
 				*/
 
 				function update(){
-					if(player.hp === 0){
+					if(player.hp <= 0){
 						socket.emit('blood', {x: player.x, y: player.y})
 						player.mortes++;
+						player.hp = 100;
 						player.y = 40;
 						player.x = Math.floor(Math.random() * WIDTH);
 					}
@@ -360,9 +370,36 @@
 						if(blood[i].x < 0 || blood[i].x > WIDTH || blood[i].y < 0 || blood[i].y > HEIGHT){
 							blood.splice(i, 1)
 						}
+						if(blood[i].speedX !== 0 || blood[i].speedY !== 0){
+							if(blood[i].x >= player.x && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
+								let alt = Math.abs((player.y + player.h) - blood[i].y )
+								if(player.blood.length <= 16 && Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
+									player.blood.push({x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt})
+								}
+							}else{
+								if(blood[i].x <= player.x + player.w && blood[i].y >= player.y && blood[i].y <= player.y + player.h){
+									blood[i].x = player.x + player.h - blood[i].w;
+									if(player.blood.length <= 16 && Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
+										let alt = Math.abs((player.y + player.h) - blood[i].y )
+										player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
+									}
+								}	
+							}
+						}
 					}
 
 					player.y += player.gravity
+					player.blood.forEach(drop => {
+						drop.y = player.y + drop.alt
+						if(drop.y + drop.h > player.y + player.h){
+							drop.y = player.y + player.h - drop.h
+						}
+						if(drop.x > player.x + (player.w / 2)){
+							drop.x = player.x + player.w - drop.w;
+						}else{
+							drop.x = player.x
+						}
+					})
 					if(player.jumping){
 						player.speed = 3;
 					}else{
@@ -385,6 +422,9 @@
 					if(keyRight) {
 						if(player.x + player.w <= WIDTH){
 							player.x += player.speed
+							player.blood.forEach(drop => {
+								drop.x += player.speed
+							})
 						}else{
 							keyRight = false;
 						}
@@ -392,6 +432,9 @@
 					if(keyLeft){
 						if(player.x >= 0){
 							player.x -= player.speed
+							player.blood.forEach(drop => {
+								drop.x -= player.speed
+							})
 						}else{
 							keyLeft = false;
 						}
