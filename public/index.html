@@ -66,7 +66,8 @@
 				gravity: 4,
 				hp: 100,
 				jumping: false,
-				face: 'right'
+				face: 'right',
+				mortes: 0
 			}
 
 			let bulletPlayer = {
@@ -258,14 +259,16 @@
 					ctx.fillStyle = "black"
 					ctx.fillText(player.name, 20, 40);
 					ctx.fillText(player.hp, 20, 80);
+					ctx.fillText(player.mortes, 20, 120);
 					if(enemy !== {}){
 						//Load enemy Image
 						var enemyImage = new Image();
 						enemyImage.src = enemy.img
 
 						ctx.fillStyle = "black"
-						ctx.fillText(enemy.name, WIDTH - 80, 40);
-						ctx.fillText(enemy.hp, WIDTH - 80, 80);
+						ctx.fillText(enemy.name, WIDTH - 100, 40);
+						ctx.fillText(enemy.hp, WIDTH - 100, 80);
+						ctx.fillText(enemy.mortes, WIDTH - 100, 120);
 						//ctx.fillStyle = 'red'
 						//ctx.fillRect(enemy.x, enemy.y, enemy.w, enemy.h);
 						ctx.drawImage(enemyImage, enemy.x, enemy.y, enemy.w, enemy.h);
@@ -294,6 +297,12 @@
 				*/
 
 				function update(){
+					if(player.hp === 0){
+						socket.emit('blood', {x: player.x, y: player.y})
+						player.mortes++;
+						player.y = 40;
+						player.x = Math.floor(Math.random() * WIDTH);
+					}
 					for (var i = 0; i < terrain.length; i++) {				    	
 				        var dir = colCheck(player, terrain[i]);
 				        if (dir === "l" || dir === "r") {
@@ -318,14 +327,17 @@
 							socket.emit('blood', {x: player.x, y: player.y})
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
+							player.mortes++;
 				        } else if (dir === "t") {
 							socket.emit('blood', {x: player.x, y: player.y})
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
+							player.mortes++;
 				        } else if (dir === "b") {
 							socket.emit('blood', {x: player.x, y: player.y})
 				            player.y = 40;
 							player.x = Math.floor(Math.random() * WIDTH);
+							player.mortes++;
 				        }
 					}
 
