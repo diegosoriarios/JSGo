@@ -388,11 +388,11 @@
 										}
 									}else{
 										if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
-											let x = Math.floor(Math.random() * 17);
-											player.blood[x] = {x: player.x + alt, y: player.y, h: 4, w: 4, alt: alt}
+											let rand = Math.floor(Math.random() * 17);
+											player.blood[rand] = {x: player.x + alt, y: player.y, h: 4, w: 4, alt: alt}
 										}else{
-											let x = Math.floor(Math.random() * 17);
-											player.blood[x] = {x: player.x + player.h - blood[i].w - alt, y: player.y, h: 4, w: 4, alt: alt}
+											let rand = Math.floor(Math.random() * 17);
+											player.blood[rand] = {x: player.x + player.h - blood[i].w - alt, y: player.y, h: 4, w: 4, alt: alt}
 										}
 									}
 								}else{
@@ -405,11 +405,11 @@
 											}
 										}else{
 											if(Math.floor(Math.random() * 3) === 0 && enemy.x < player.x){
-												let x = Math.floor(Math.random() * 17);
-												player.blood[x] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
+												let rand = Math.floor(Math.random() * 17); 
+												player.blood[rand] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
 											}else{
-												let x = Math.floor(Math.random() * 17);
-												player.blood[x] = {x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt}
+												let rand = Math.floor(Math.random() * 17);
+												player.blood[rand] = {x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt}
 											}
 										}
 									}else{
@@ -424,8 +424,8 @@
 												if(Math.floor(Math.random() * 3) === 0 && enemy.x > player.x + player.w){
 													player.blood.push({x: player.x + player.h - blood[i].w, y: player.y + alt, h: 4, w: 4, alt: alt})
 												}else{
-													let x = Math.floor(Math.random() * 17);
-													player.blood[x] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
+													let rand = Math.floor(Math.random() * 17);
+													player.blood[rand] = {x: player.x, y: player.y + alt, h: 4, w: 4, alt: alt}
 												}
 											}
 										}	
