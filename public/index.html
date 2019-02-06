@@ -125,8 +125,8 @@
 				terrain.push({x: WIDTH - 96 - 192, 		y: HEIGHT - 480, 	w: 96, 			h: 32		});
 				terrain.push({x: 192, 					y: HEIGHT - 480, 	w: 96, 			h: 32		});
 				evil.push({x: 0, 			y: HEIGHT - 32, 	w: WIDTH, 	h: 32, color: 'red'});
-				evil.push({x: 192, 			y: HEIGHT - 128, 	w: 32, 		h: 32, color: 'brown'});
-				evil.push({x: WIDTH / 2, 	y: HEIGHT - 416, 	w: 32, 		h: 32, color: 'brown'});
+				evil.push({x: 192, 			y: HEIGHT - 128, 	w: 32, 		h: 32, color: 'brown', image: 'https://vignette.wikia.nocookie.net/scribblenauts/images/8/8d/Steel_Spike.png'});
+				evil.push({x: WIDTH / 2, 	y: HEIGHT - 416, 	w: 32, 		h: 32, color: 'brown', image: 'https://vignette.wikia.nocookie.net/scribblenauts/images/8/8d/Steel_Spike.png'});
 			}
 
 			function getKey(e) {
@@ -293,8 +293,14 @@
 						ctx.fillRect(bulletEnemy.x, bulletEnemy.y, bulletEnemy.w, bulletEnemy.h);
 					}
 					evil.forEach(value => {
-						ctx.fillStyle = value.color
-						ctx.fillRect(value.x, value.y, value.w, value.h);
+						var evilImage = new Image();
+						evilImage.src = value.image
+						if(value.image !== undefined){
+							ctx.drawImage(evilImage, value.x, value.y, value.w, value.h);
+						}else{
+							ctx.fillStyle = value.color
+							ctx.fillRect(value.x, value.y, value.w, value.h);
+						}
 					})
 					//POWER UP
 					if(power){
